@@ -34,6 +34,7 @@ def process_lobe_maxproj(
     canvas_size=800,
     show=True,
     output_file=None,
+    return_prevoxel_areas=False,
 ):
     """
     For each lineage:
@@ -97,6 +98,7 @@ def process_lobe_maxproj(
     geo_tensors = []  # list of (H, W, 2)
     counts_list = []  # list of [N_dpn, N_pros]
     lineage_ids = []  # which lineage index each sample came from
+    prevoxel_lineage_areas_um2 = []  # area of projected lineage hull before voxelization
 
     # Genotype label inferred from output_file name
     genotype_label = None
@@ -221,6 +223,9 @@ def process_lobe_maxproj(
 
         # union of all Dpn = "neuroblast" mask
         nb_poly = unary_union(dpn_polys) if dpn_polys else None
+
+        # area in um^2 before voxelization (projection hull on slice plane)
+        prevoxel_lineage_areas_um2.append(float(poly_lineage_proj.area))
 
         # --- Voxelize onto a regular grid with spacing ds ---
         xmin, ymin, xmax, ymax = poly_lineage_proj.bounds
@@ -443,6 +448,8 @@ def process_lobe_maxproj(
     # --- Save data if requested ---
     if not geo_tensors:
         print("No valid lineages; nothing to save.")
+        if return_prevoxel_areas:
+            return None, None, None, None
         return None, None, None
 
     geo_arr = np.stack(geo_tensors, axis=0)  # (N, H, W, 2)
@@ -471,6 +478,18 @@ def process_lobe_maxproj(
         if labels_arr is not None:
             print(f"  labels shape: {labels_arr.shape}, first few: {labels_arr[:5]}")
 
+    if prevoxel_lineage_areas_um2:
+        area_arr = np.asarray(prevoxel_lineage_areas_um2, dtype=float)
+        print(
+            "Pre-voxel lineage projection area summary "
+            f"(um^2): mean={area_arr.mean():.3f} std={area_arr.std():.3f} N={area_arr.size:d}"
+        )
+    else:
+        area_arr = np.array([], dtype=float)
+        print("Pre-voxel lineage projection area summary (um^2): no data")
+
+    if return_prevoxel_areas:
+        return geo_arr, counts_arr, lineage_ids_arr, area_arr
     return geo_arr, counts_arr, lineage_ids_arr
 
 
@@ -644,6 +663,7 @@ def run_all_wt_lobes(
     base_dir = Path("data/exp/wrl_files/Control")
     out_dir = Path("data/exp/npz_files/exp_wt_npz")
     out_dir.mkdir(parents=True, exist_ok=True)
+    group_area_values = []
 
     for lobe in lobes:
         print("\n" + "=" * 80)
@@ -662,7 +682,7 @@ def run_all_wt_lobes(
         print(f"  dpn_file:     {dpn_file}")
         print(f"  output_file:  {output_file}")
 
-        geo, counts, lineage_ids = process_lobe_maxproj(
+        geo, counts, lineage_ids, area_arr = process_lobe_maxproj(
             lineage_file=lineage_file,
             pros_file=pros_file,
             dpn_file=dpn_file,
@@ -671,15 +691,28 @@ def run_all_wt_lobes(
             canvas_size=canvas_size,
             show=False,  # visualize each lineage
             output_file=output_file,
+            return_prevoxel_areas=True,
         )
 
         if geo is None:
             print(f"⚠️  No valid lineages for WT lobe {lobe}; nothing saved.")
         else:
+            if area_arr is not None and area_arr.size > 0:
+                group_area_values.extend(area_arr.tolist())
             print(
                 f"✅ Finished WT lobe {lobe}: "
                 f"{geo.shape[0]} lineages → {output_file}"
             )
+
+    if group_area_values:
+        group_area_arr = np.asarray(group_area_values, dtype=float)
+        print(
+            "\nWT pre-voxel lineage projection area summary "
+            f"(um^2): mean={group_area_arr.mean():.3f} std={group_area_arr.std():.3f} "
+            f"N={group_area_arr.size:d}"
+        )
+    else:
+        print("\nWT pre-voxel lineage projection area summary (um^2): no data")
 
 
 # ------ Functions for running all experimental data through pipeline ----
@@ -701,6 +734,7 @@ def run_all_mud_lobes(
     base_dir = Path("data/exp/wrl_files/Mud")
     out_dir = Path("data/exp/npz_files/exp_mud_npz")
     out_dir.mkdir(parents=True, exist_ok=True)
+    group_area_values = []
 
     for lobe in lobes:
         print("\n" + "=" * 80)
@@ -718,7 +752,7 @@ def run_all_mud_lobes(
         print(f"  dpn_file:     {dpn_file}")
         print(f"  output_file:  {output_file}")
 
-        geo, counts, lineage_ids = process_lobe_maxproj(
+        geo, counts, lineage_ids, area_arr = process_lobe_maxproj(
             lineage_file=lineage_file,
             pros_file=pros_file,
             dpn_file=dpn_file,
@@ -727,14 +761,27 @@ def run_all_mud_lobes(
             canvas_size=canvas_size,
             show=False,  # visualize each lineage
             output_file=output_file,
+            return_prevoxel_areas=True,
         )
 
         if geo is None:
             print(f"⚠️  No valid lineages for lobe {lobe}; nothing saved.")
         else:
+            if area_arr is not None and area_arr.size > 0:
+                group_area_values.extend(area_arr.tolist())
             print(
                 f"✅ Finished lobe {lobe}: " f"{geo.shape[0]} lineages → {output_file}"
             )
+
+    if group_area_values:
+        group_area_arr = np.asarray(group_area_values, dtype=float)
+        print(
+            "\nMUD pre-voxel lineage projection area summary "
+            f"(um^2): mean={group_area_arr.mean():.3f} std={group_area_arr.std():.3f} "
+            f"N={group_area_arr.size:d}"
+        )
+    else:
+        print("\nMUD pre-voxel lineage projection area summary (um^2): no data")
 
 
 def run_all_nanobody_lobes(
@@ -755,6 +802,7 @@ def run_all_nanobody_lobes(
     base_dir = Path("data/exp/wrl_files/Nanobody")
     out_dir = Path("data/exp/npz_files/exp_nanobody_npz")
     out_dir.mkdir(parents=True, exist_ok=True)
+    group_area_values = []
 
     for lobe in lobes:
         print("\n" + "=" * 80)
@@ -772,7 +820,7 @@ def run_all_nanobody_lobes(
         print(f"  dpn_file:     {dpn_file}")
         print(f"  output_file:  {output_file}")
 
-        geo, counts, lineage_ids = process_lobe_maxproj(
+        geo, counts, lineage_ids, area_arr = process_lobe_maxproj(
             lineage_file=lineage_file,
             pros_file=pros_file,
             dpn_file=dpn_file,
@@ -781,15 +829,28 @@ def run_all_nanobody_lobes(
             canvas_size=canvas_size,
             show=False,  # visualize each lineage
             output_file=output_file,
+            return_prevoxel_areas=True,
         )
 
         if geo is None:
             print(f"⚠️  No valid lineages for Nanobody lobe {lobe}; nothing saved.")
         else:
+            if area_arr is not None and area_arr.size > 0:
+                group_area_values.extend(area_arr.tolist())
             print(
                 f"✅ Finished Nanobody lobe {lobe}: "
                 f"{geo.shape[0]} lineages → {output_file}"
             )
+
+    if group_area_values:
+        group_area_arr = np.asarray(group_area_values, dtype=float)
+        print(
+            "\nNANOBODY pre-voxel lineage projection area summary "
+            f"(um^2): mean={group_area_arr.mean():.3f} std={group_area_arr.std():.3f} "
+            f"N={group_area_arr.size:d}"
+        )
+    else:
+        print("\nNANOBODY pre-voxel lineage projection area summary (um^2): no data")
 
 
 if __name__ == "__main__":

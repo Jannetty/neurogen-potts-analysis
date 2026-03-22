@@ -273,7 +273,8 @@ def random_sample_idx(geo):
 if __name__ == "__main__":
     base = Path("data/sim")
     # MODEL_RUNS = [p.name for p in base.iterdir() if p.is_dir()]
-    MODEL_RUNS = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20"]
+    MODEL_RUNS = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40"]
+    #MODEL_RUNS = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10"]
     print(f"Detected model runs: {MODEL_RUNS}")
     out_npz = precompute_sim_geo_counts_to_npz(base, MODEL_RUNS, grid_size=(800, 800))
     sanity_check_sim_npz(out_npz)

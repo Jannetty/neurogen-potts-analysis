@@ -1,0 +1,1626 @@
+
+================================================================================
+Processing WT lobe 1
+================================================================================
+  lineage_file: data/exp/wrl_files/Control/lobe1_control_lineages.wrl
+  pros_file:    data/exp/wrl_files/Control/lobe1_control_pros.wrl
+  dpn_file:     data/exp/wrl_files/Control/lobe1_control_dpn.wrl
+  output_file:  data/exp/npz_files/exp_wt_npz/lobe1_wt_maxproj.npz
+Pros per lineage (bbox assignment):
+  lineage 0: 25 pros cells
+  lineage 1: 30 pros cells
+  lineage 2: 77 pros cells
+  lineage 3: 17 pros cells
+  lineage 4: 76 pros cells
+  lineage 5: 49 pros cells
+  lineage 6: 47 pros cells
+  lineage 7: 21 pros cells
+  lineage 8: 36 pros cells
+  lineage 9: 32 pros cells
+  unassigned pros: 0
+
+Dpn per lineage (bbox assignment):
+  lineage 0: 1 dpn cells
+  lineage 1: 1 dpn cells
+  lineage 2: 1 dpn cells
+  lineage 3: 1 dpn cells
+  lineage 4: 1 dpn cells
+  lineage 5: 1 dpn cells
+  lineage 6: 1 dpn cells
+  lineage 7: 1 dpn cells
+  lineage 8: 1 dpn cells
+  lineage 9: 1 dpn cells
+  unassigned dpn: 20
+
+=== Lineage 0 ===
+
+=== Lineage 1 ===
+
+=== Lineage 2 ===
+
+=== Lineage 3 ===
+
+=== Lineage 4 ===
+
+=== Lineage 5 ===
+
+=== Lineage 6 ===
+
+=== Lineage 7 ===
+
+=== Lineage 8 ===
+
+=== Lineage 9 ===
+
+Saved tensors → data/exp/npz_files/exp_wt_npz/lobe1_wt_maxproj.npz
+  labels shape: (10,), first few: ['wt' 'wt' 'wt' 'wt' 'wt']
+Pre-voxel lineage projection area summary (um^2): mean=450.612 std=114.247 N=10
+✅ Finished WT lobe 1: 10 lineages → data/exp/npz_files/exp_wt_npz/lobe1_wt_maxproj.npz
+
+================================================================================
+Processing WT lobe 2
+================================================================================
+  lineage_file: data/exp/wrl_files/Control/lobe2_control_lineages.wrl
+  pros_file:    data/exp/wrl_files/Control/lobe2_control_pros.wrl
+  dpn_file:     data/exp/wrl_files/Control/lobe2_control_dpn.wrl
+  output_file:  data/exp/npz_files/exp_wt_npz/lobe2_wt_maxproj.npz
+Pros per lineage (bbox assignment):
+  lineage 0: 23 pros cells
+  lineage 1: 33 pros cells
+  lineage 2: 30 pros cells
+  lineage 3: 21 pros cells
+  lineage 4: 68 pros cells
+  lineage 5: 0 pros cells
+  lineage 6: 0 pros cells
+  lineage 7: 44 pros cells
+  lineage 8: 26 pros cells
+  lineage 9: 27 pros cells
+  lineage 10: 59 pros cells
+  lineage 11: 40 pros cells
+  lineage 12: 58 pros cells
+  lineage 13: 15 pros cells
+  lineage 14: 0 pros cells
+  lineage 15: 0 pros cells
+  lineage 16: 0 pros cells
+  lineage 17: 0 pros cells
+  lineage 18: 0 pros cells
+  lineage 19: 0 pros cells
+  lineage 20: 0 pros cells
+  lineage 21: 0 pros cells
+  lineage 22: 0 pros cells
+  lineage 23: 0 pros cells
+  lineage 24: 0 pros cells
+  lineage 25: 0 pros cells
+  lineage 26: 0 pros cells
+  lineage 27: 0 pros cells
+  lineage 28: 0 pros cells
+  lineage 29: 0 pros cells
+  lineage 30: 0 pros cells
+  lineage 31: 0 pros cells
+  lineage 32: 60 pros cells
+  lineage 33: 0 pros cells
+  lineage 34: 0 pros cells
+  lineage 35: 0 pros cells
+  lineage 36: 0 pros cells
+  lineage 37: 0 pros cells
+  lineage 38: 0 pros cells
+  lineage 39: 31 pros cells
+  lineage 40: 35 pros cells
+  lineage 41: 0 pros cells
+  unassigned pros: 0
+
+Dpn per lineage (bbox assignment):
+  lineage 0: 2 dpn cells
+  lineage 1: 1 dpn cells
+  lineage 2: 1 dpn cells
+  lineage 3: 0 dpn cells
+  lineage 4: 1 dpn cells
+  lineage 5: 0 dpn cells
+  lineage 6: 0 dpn cells
+  lineage 7: 0 dpn cells
+  lineage 8: 1 dpn cells
+  lineage 9: 1 dpn cells
+  lineage 10: 1 dpn cells
+  lineage 11: 2 dpn cells
+  lineage 12: 1 dpn cells
+  lineage 13: 1 dpn cells
+  lineage 14: 0 dpn cells
+  lineage 15: 0 dpn cells
+  lineage 16: 0 dpn cells
+  lineage 17: 0 dpn cells
+  lineage 18: 0 dpn cells
+  lineage 19: 0 dpn cells
+  lineage 20: 0 dpn cells
+  lineage 21: 0 dpn cells
+  lineage 22: 0 dpn cells
+  lineage 23: 0 dpn cells
+  lineage 24: 0 dpn cells
+  lineage 25: 0 dpn cells
+  lineage 26: 0 dpn cells
+  lineage 27: 0 dpn cells
+  lineage 28: 0 dpn cells
+  lineage 29: 0 dpn cells
+  lineage 30: 0 dpn cells
+  lineage 31: 0 dpn cells
+  lineage 32: 1 dpn cells
+  lineage 33: 0 dpn cells
+  lineage 34: 0 dpn cells
+  lineage 35: 0 dpn cells
+  lineage 36: 0 dpn cells
+  lineage 37: 0 dpn cells
+  lineage 38: 0 dpn cells
+  lineage 39: 1 dpn cells
+  lineage 40: 1 dpn cells
+  lineage 41: 0 dpn cells
+  unassigned dpn: 9
+
+=== Lineage 0 ===
+=== Lineage 0 appears disconnected; skipping ===
+
+=== Lineage 1 ===
+=== Lineage 1 appears disconnected; skipping ===
+
+=== Lineage 2 ===
+
+=== Lineage 3 ===
+[Lineage 3] No Dpn assigned; skipping.
+
+=== Lineage 4 ===
+
+=== Lineage 5 ===
+[Lineage 5] No Dpn assigned; skipping.
+
+=== Lineage 6 ===
+[Lineage 6] No Dpn assigned; skipping.
+
+=== Lineage 7 ===
+[Lineage 7] No Dpn assigned; skipping.
+
+=== Lineage 8 ===
+
+=== Lineage 9 ===
+
+=== Lineage 10 ===
+
+=== Lineage 11 ===
+=== Lineage 11 appears disconnected; skipping ===
+
+=== Lineage 12 ===
+
+=== Lineage 13 ===
+
+=== Lineage 14 ===
+=== Lineage 14 appears disconnected; skipping ===
+
+=== Lineage 15 ===
+[Lineage 15] No Dpn assigned; skipping.
+
+=== Lineage 16 ===
+=== Lineage 16 appears disconnected; skipping ===
+
+=== Lineage 17 ===
+=== Lineage 17 appears disconnected; skipping ===
+
+=== Lineage 18 ===
+=== Lineage 18 appears disconnected; skipping ===
+
+=== Lineage 19 ===
+=== Lineage 19 appears disconnected; skipping ===
+
+=== Lineage 20 ===
+=== Lineage 20 appears disconnected; skipping ===
+
+=== Lineage 21 ===
+=== Lineage 21 appears disconnected; skipping ===
+
+=== Lineage 22 ===
+=== Lineage 22 appears disconnected; skipping ===
+
+=== Lineage 23 ===
+=== Lineage 23 appears disconnected; skipping ===
+
+=== Lineage 24 ===
+=== Lineage 24 appears disconnected; skipping ===
+
+=== Lineage 25 ===
+=== Lineage 25 appears disconnected; skipping ===
+
+=== Lineage 26 ===
+=== Lineage 26 appears disconnected; skipping ===
+
+=== Lineage 27 ===
+=== Lineage 27 appears disconnected; skipping ===
+
+=== Lineage 28 ===
+=== Lineage 28 appears disconnected; skipping ===
+
+=== Lineage 29 ===
+=== Lineage 29 appears disconnected; skipping ===
+
+=== Lineage 30 ===
+=== Lineage 30 appears disconnected; skipping ===
+
+=== Lineage 31 ===
+=== Lineage 31 appears disconnected; skipping ===
+
+=== Lineage 32 ===
+
+=== Lineage 33 ===
+=== Lineage 33 appears disconnected; skipping ===
+
+=== Lineage 34 ===
+[Lineage 34] No Dpn assigned; skipping.
+
+=== Lineage 35 ===
+=== Lineage 35 appears disconnected; skipping ===
+
+=== Lineage 36 ===
+=== Lineage 36 appears disconnected; skipping ===
+
+=== Lineage 37 ===
+=== Lineage 37 appears disconnected; skipping ===
+
+=== Lineage 38 ===
+=== Lineage 38 appears disconnected; skipping ===
+
+=== Lineage 39 ===
+
+=== Lineage 40 ===
+
+=== Lineage 41 ===
+=== Lineage 41 appears disconnected; skipping ===
+
+Saved tensors → data/exp/npz_files/exp_wt_npz/lobe2_wt_maxproj.npz
+  labels shape: (10,), first few: ['wt' 'wt' 'wt' 'wt' 'wt']
+Pre-voxel lineage projection area summary (um^2): mean=467.544 std=103.492 N=10
+✅ Finished WT lobe 2: 10 lineages → data/exp/npz_files/exp_wt_npz/lobe2_wt_maxproj.npz
+
+================================================================================
+Processing WT lobe 7
+================================================================================
+  lineage_file: data/exp/wrl_files/Control/lobe7_control_lineages.wrl
+  pros_file:    data/exp/wrl_files/Control/lobe7_control_pros.wrl
+  dpn_file:     data/exp/wrl_files/Control/lobe7_control_dpn.wrl
+  output_file:  data/exp/npz_files/exp_wt_npz/lobe7_wt_maxproj.npz
+Pros per lineage (bbox assignment):
+  lineage 0: 0 pros cells
+  lineage 1: 43 pros cells
+  lineage 2: 52 pros cells
+  lineage 3: 94 pros cells
+  lineage 4: 0 pros cells
+  lineage 5: 0 pros cells
+  lineage 6: 89 pros cells
+  lineage 7: 0 pros cells
+  lineage 8: 0 pros cells
+  lineage 9: 23 pros cells
+  lineage 10: 31 pros cells
+  lineage 11: 43 pros cells
+  lineage 12: 66 pros cells
+  lineage 13: 56 pros cells
+  lineage 14: 43 pros cells
+  lineage 15: 64 pros cells
+  lineage 16: 56 pros cells
+  lineage 17: 35 pros cells
+  lineage 18: 0 pros cells
+  lineage 19: 35 pros cells
+  lineage 20: 0 pros cells
+  lineage 21: 0 pros cells
+  lineage 22: 0 pros cells
+  lineage 23: 0 pros cells
+  lineage 24: 0 pros cells
+  lineage 25: 0 pros cells
+  lineage 26: 0 pros cells
+  lineage 27: 0 pros cells
+  lineage 28: 0 pros cells
+  lineage 29: 0 pros cells
+  lineage 30: 0 pros cells
+  lineage 31: 0 pros cells
+  lineage 32: 0 pros cells
+  lineage 33: 0 pros cells
+  lineage 34: 0 pros cells
+  unassigned pros: 34
+
+Dpn per lineage (bbox assignment):
+  lineage 0: 0 dpn cells
+  lineage 1: 1 dpn cells
+  lineage 2: 1 dpn cells
+  lineage 3: 1 dpn cells
+  lineage 4: 0 dpn cells
+  lineage 5: 0 dpn cells
+  lineage 6: 1 dpn cells
+  lineage 7: 0 dpn cells
+  lineage 8: 0 dpn cells
+  lineage 9: 1 dpn cells
+  lineage 10: 1 dpn cells
+  lineage 11: 1 dpn cells
+  lineage 12: 1 dpn cells
+  lineage 13: 1 dpn cells
+  lineage 14: 1 dpn cells
+  lineage 15: 1 dpn cells
+  lineage 16: 1 dpn cells
+  lineage 17: 1 dpn cells
+  lineage 18: 0 dpn cells
+  lineage 19: 1 dpn cells
+  lineage 20: 0 dpn cells
+  lineage 21: 0 dpn cells
+  lineage 22: 0 dpn cells
+  lineage 23: 0 dpn cells
+  lineage 24: 0 dpn cells
+  lineage 25: 0 dpn cells
+  lineage 26: 0 dpn cells
+  lineage 27: 0 dpn cells
+  lineage 28: 0 dpn cells
+  lineage 29: 0 dpn cells
+  lineage 30: 0 dpn cells
+  lineage 31: 0 dpn cells
+  lineage 32: 0 dpn cells
+  lineage 33: 0 dpn cells
+  lineage 34: 0 dpn cells
+  unassigned dpn: 15
+
+=== Lineage 0 ===
+=== Lineage 0 appears disconnected; skipping ===
+
+=== Lineage 1 ===
+
+=== Lineage 2 ===
+
+=== Lineage 3 ===
+
+=== Lineage 4 ===
+=== Lineage 4 appears disconnected; skipping ===
+
+=== Lineage 5 ===
+[Lineage 5] No Dpn assigned; skipping.
+
+=== Lineage 6 ===
+=== Lineage 6 appears disconnected; skipping ===
+
+=== Lineage 7 ===
+=== Lineage 7 appears disconnected; skipping ===
+
+=== Lineage 8 ===
+[Lineage 8] No Dpn assigned; skipping.
+
+=== Lineage 9 ===
+
+=== Lineage 10 ===
+
+=== Lineage 11 ===
+
+=== Lineage 12 ===
+
+=== Lineage 13 ===
+
+=== Lineage 14 ===
+
+=== Lineage 15 ===
+
+=== Lineage 16 ===
+
+=== Lineage 17 ===
+
+=== Lineage 18 ===
+=== Lineage 18 appears disconnected; skipping ===
+
+=== Lineage 19 ===
+
+=== Lineage 20 ===
+=== Lineage 20 appears disconnected; skipping ===
+
+=== Lineage 21 ===
+=== Lineage 21 appears disconnected; skipping ===
+
+=== Lineage 22 ===
+=== Lineage 22 appears disconnected; skipping ===
+
+=== Lineage 23 ===
+=== Lineage 23 appears disconnected; skipping ===
+
+=== Lineage 24 ===
+=== Lineage 24 appears disconnected; skipping ===
+
+=== Lineage 25 ===
+=== Lineage 25 appears disconnected; skipping ===
+
+=== Lineage 26 ===
+[Lineage 26] No Dpn assigned; skipping.
+
+=== Lineage 27 ===
+=== Lineage 27 appears disconnected; skipping ===
+
+=== Lineage 28 ===
+=== Lineage 28 appears disconnected; skipping ===
+
+=== Lineage 29 ===
+=== Lineage 29 appears disconnected; skipping ===
+
+=== Lineage 30 ===
+=== Lineage 30 appears disconnected; skipping ===
+
+=== Lineage 31 ===
+=== Lineage 31 appears disconnected; skipping ===
+
+=== Lineage 32 ===
+=== Lineage 32 appears disconnected; skipping ===
+
+=== Lineage 33 ===
+=== Lineage 33 appears disconnected; skipping ===
+
+=== Lineage 34 ===
+=== Lineage 34 appears disconnected; skipping ===
+
+Saved tensors → data/exp/npz_files/exp_wt_npz/lobe7_wt_maxproj.npz
+  labels shape: (13,), first few: ['wt' 'wt' 'wt' 'wt' 'wt']
+Pre-voxel lineage projection area summary (um^2): mean=477.340 std=120.992 N=13
+✅ Finished WT lobe 7: 13 lineages → data/exp/npz_files/exp_wt_npz/lobe7_wt_maxproj.npz
+
+================================================================================
+Processing WT lobe 8
+================================================================================
+  lineage_file: data/exp/wrl_files/Control/lobe8_control_lineages.wrl
+  pros_file:    data/exp/wrl_files/Control/lobe8_control_pros.wrl
+  dpn_file:     data/exp/wrl_files/Control/lobe8_control_dpn.wrl
+  output_file:  data/exp/npz_files/exp_wt_npz/lobe8_wt_maxproj.npz
+Pros per lineage (bbox assignment):
+  lineage 0: 0 pros cells
+  lineage 1: 0 pros cells
+  lineage 2: 26 pros cells
+  lineage 3: 43 pros cells
+  lineage 4: 24 pros cells
+  lineage 5: 46 pros cells
+  lineage 6: 0 pros cells
+  lineage 7: 0 pros cells
+  lineage 8: 0 pros cells
+  lineage 9: 36 pros cells
+  lineage 10: 22 pros cells
+  lineage 11: 24 pros cells
+  lineage 12: 38 pros cells
+  lineage 13: 47 pros cells
+  lineage 14: 48 pros cells
+  lineage 15: 51 pros cells
+  lineage 16: 32 pros cells
+  lineage 17: 0 pros cells
+  lineage 18: 0 pros cells
+  lineage 19: 17 pros cells
+  lineage 20: 0 pros cells
+  lineage 21: 0 pros cells
+  lineage 22: 0 pros cells
+  lineage 23: 0 pros cells
+  lineage 24: 0 pros cells
+  lineage 25: 18 pros cells
+  lineage 26: 31 pros cells
+  unassigned pros: 1
+
+Dpn per lineage (bbox assignment):
+  lineage 0: 0 dpn cells
+  lineage 1: 0 dpn cells
+  lineage 2: 1 dpn cells
+  lineage 3: 0 dpn cells
+  lineage 4: 1 dpn cells
+  lineage 5: 0 dpn cells
+  lineage 6: 0 dpn cells
+  lineage 7: 0 dpn cells
+  lineage 8: 0 dpn cells
+  lineage 9: 1 dpn cells
+  lineage 10: 1 dpn cells
+  lineage 11: 1 dpn cells
+  lineage 12: 1 dpn cells
+  lineage 13: 1 dpn cells
+  lineage 14: 1 dpn cells
+  lineage 15: 0 dpn cells
+  lineage 16: 0 dpn cells
+  lineage 17: 0 dpn cells
+  lineage 18: 0 dpn cells
+  lineage 19: 0 dpn cells
+  lineage 20: 0 dpn cells
+  lineage 21: 0 dpn cells
+  lineage 22: 0 dpn cells
+  lineage 23: 0 dpn cells
+  lineage 24: 0 dpn cells
+  lineage 25: 1 dpn cells
+  lineage 26: 1 dpn cells
+  unassigned dpn: 13
+
+=== Lineage 0 ===
+[Lineage 0] No Dpn assigned; skipping.
+
+=== Lineage 1 ===
+=== Lineage 1 appears disconnected; skipping ===
+
+=== Lineage 2 ===
+
+=== Lineage 3 ===
+=== Lineage 3 appears disconnected; skipping ===
+
+=== Lineage 4 ===
+
+=== Lineage 5 ===
+[Lineage 5] No Dpn assigned; skipping.
+
+=== Lineage 6 ===
+=== Lineage 6 appears disconnected; skipping ===
+
+=== Lineage 7 ===
+=== Lineage 7 appears disconnected; skipping ===
+
+=== Lineage 8 ===
+=== Lineage 8 appears disconnected; skipping ===
+
+=== Lineage 9 ===
+
+=== Lineage 10 ===
+
+=== Lineage 11 ===
+
+=== Lineage 12 ===
+
+=== Lineage 13 ===
+
+=== Lineage 14 ===
+
+=== Lineage 15 ===
+[Lineage 15] No Dpn assigned; skipping.
+
+=== Lineage 16 ===
+[Lineage 16] No Dpn assigned; skipping.
+
+=== Lineage 17 ===
+=== Lineage 17 appears disconnected; skipping ===
+
+=== Lineage 18 ===
+=== Lineage 18 appears disconnected; skipping ===
+
+=== Lineage 19 ===
+[Lineage 19] No Dpn assigned; skipping.
+
+=== Lineage 20 ===
+=== Lineage 20 appears disconnected; skipping ===
+
+=== Lineage 21 ===
+=== Lineage 21 appears disconnected; skipping ===
+
+=== Lineage 22 ===
+=== Lineage 22 appears disconnected; skipping ===
+
+=== Lineage 23 ===
+=== Lineage 23 appears disconnected; skipping ===
+
+=== Lineage 24 ===
+[Lineage 24] No Dpn assigned; skipping.
+
+=== Lineage 25 ===
+
+=== Lineage 26 ===
+
+Saved tensors → data/exp/npz_files/exp_wt_npz/lobe8_wt_maxproj.npz
+  labels shape: (10,), first few: ['wt' 'wt' 'wt' 'wt' 'wt']
+Pre-voxel lineage projection area summary (um^2): mean=478.617 std=102.208 N=10
+✅ Finished WT lobe 8: 10 lineages → data/exp/npz_files/exp_wt_npz/lobe8_wt_maxproj.npz
+
+================================================================================
+Processing WT lobe 13
+================================================================================
+  lineage_file: data/exp/wrl_files/Control/lobe13_control_lineages.wrl
+  pros_file:    data/exp/wrl_files/Control/lobe13_control_pros.wrl
+  dpn_file:     data/exp/wrl_files/Control/lobe13_control_dpn.wrl
+  output_file:  data/exp/npz_files/exp_wt_npz/lobe13_wt_maxproj.npz
+Pros per lineage (bbox assignment):
+  lineage 0: 106 pros cells
+  lineage 1: 0 pros cells
+  lineage 2: 84 pros cells
+  lineage 3: 34 pros cells
+  lineage 4: 25 pros cells
+  lineage 5: 81 pros cells
+  lineage 6: 78 pros cells
+  lineage 7: 69 pros cells
+  lineage 8: 22 pros cells
+  lineage 9: 52 pros cells
+  lineage 10: 45 pros cells
+  lineage 11: 49 pros cells
+  lineage 12: 0 pros cells
+  lineage 13: 1 pros cells
+  lineage 14: 0 pros cells
+  lineage 15: 0 pros cells
+  lineage 16: 0 pros cells
+  lineage 17: 0 pros cells
+  lineage 18: 49 pros cells
+  lineage 19: 0 pros cells
+  unassigned pros: 0
+
+Dpn per lineage (bbox assignment):
+  lineage 0: 1 dpn cells
+  lineage 1: 0 dpn cells
+  lineage 2: 3 dpn cells
+  lineage 3: 1 dpn cells
+  lineage 4: 1 dpn cells
+  lineage 5: 1 dpn cells
+  lineage 6: 1 dpn cells
+  lineage 7: 1 dpn cells
+  lineage 8: 1 dpn cells
+  lineage 9: 1 dpn cells
+  lineage 10: 1 dpn cells
+  lineage 11: 1 dpn cells
+  lineage 12: 0 dpn cells
+  lineage 13: 1 dpn cells
+  lineage 14: 0 dpn cells
+  lineage 15: 0 dpn cells
+  lineage 16: 0 dpn cells
+  lineage 17: 0 dpn cells
+  lineage 18: 1 dpn cells
+  lineage 19: 0 dpn cells
+  unassigned dpn: 14
+
+=== Lineage 0 ===
+
+=== Lineage 1 ===
+=== Lineage 1 appears disconnected; skipping ===
+
+=== Lineage 2 ===
+
+=== Lineage 3 ===
+
+=== Lineage 4 ===
+
+=== Lineage 5 ===
+
+=== Lineage 6 ===
+
+=== Lineage 7 ===
+
+=== Lineage 8 ===
+=== Lineage 8 appears disconnected; skipping ===
+
+=== Lineage 9 ===
+
+=== Lineage 10 ===
+
+=== Lineage 11 ===
+
+=== Lineage 12 ===
+=== Lineage 12 appears disconnected; skipping ===
+
+=== Lineage 13 ===
+
+=== Lineage 14 ===
+=== Lineage 14 appears disconnected; skipping ===
+
+=== Lineage 15 ===
+=== Lineage 15 appears disconnected; skipping ===
+
+=== Lineage 16 ===
+=== Lineage 16 appears disconnected; skipping ===
+
+=== Lineage 17 ===
+=== Lineage 17 appears disconnected; skipping ===
+
+=== Lineage 18 ===
+
+=== Lineage 19 ===
+=== Lineage 19 appears disconnected; skipping ===
+
+Saved tensors → data/exp/npz_files/exp_wt_npz/lobe13_wt_maxproj.npz
+  labels shape: (12,), first few: ['wt' 'wt' 'wt' 'wt' 'wt']
+Pre-voxel lineage projection area summary (um^2): mean=575.084 std=116.547 N=12
+✅ Finished WT lobe 13: 12 lineages → data/exp/npz_files/exp_wt_npz/lobe13_wt_maxproj.npz
+
+================================================================================
+Processing WT lobe 15
+================================================================================
+  lineage_file: data/exp/wrl_files/Control/lobe15_control_lineages.wrl
+  pros_file:    data/exp/wrl_files/Control/lobe15_control_pros.wrl
+  dpn_file:     data/exp/wrl_files/Control/lobe15_control_dpn.wrl
+  output_file:  data/exp/npz_files/exp_wt_npz/lobe15_wt_maxproj.npz
+Pros per lineage (bbox assignment):
+  lineage 0: 32 pros cells
+  lineage 1: 27 pros cells
+  lineage 2: 59 pros cells
+  lineage 3: 34 pros cells
+  lineage 4: 14 pros cells
+  lineage 5: 54 pros cells
+  lineage 6: 58 pros cells
+  lineage 7: 41 pros cells
+  lineage 8: 49 pros cells
+  unassigned pros: 1
+
+Dpn per lineage (bbox assignment):
+  lineage 0: 0 dpn cells
+  lineage 1: 1 dpn cells
+  lineage 2: 0 dpn cells
+  lineage 3: 1 dpn cells
+  lineage 4: 0 dpn cells
+  lineage 5: 1 dpn cells
+  lineage 6: 0 dpn cells
+  lineage 7: 1 dpn cells
+  lineage 8: 1 dpn cells
+  unassigned dpn: 23
+
+=== Lineage 0 ===
+[Lineage 0] No Dpn assigned; skipping.
+
+=== Lineage 1 ===
+
+=== Lineage 2 ===
+[Lineage 2] No Dpn assigned; skipping.
+
+=== Lineage 3 ===
+
+=== Lineage 4 ===
+[Lineage 4] No Dpn assigned; skipping.
+
+=== Lineage 5 ===
+
+=== Lineage 6 ===
+=== Lineage 6 appears disconnected; skipping ===
+
+=== Lineage 7 ===
+
+=== Lineage 8 ===
+
+Saved tensors → data/exp/npz_files/exp_wt_npz/lobe15_wt_maxproj.npz
+  labels shape: (5,), first few: ['wt' 'wt' 'wt' 'wt' 'wt']
+Pre-voxel lineage projection area summary (um^2): mean=494.566 std=89.581 N=5
+✅ Finished WT lobe 15: 5 lineages → data/exp/npz_files/exp_wt_npz/lobe15_wt_maxproj.npz
+
+WT pre-voxel lineage projection area summary (um^2): mean=492.450 std=118.749 N=60
+
+================================================================================
+Processing Mud lobe 110
+================================================================================
+  lineage_file: data/exp/wrl_files/Mud/lobe110_mud_lineages.wrl
+  pros_file:    data/exp/wrl_files/Mud/lobe110_mud_pros.wrl
+  dpn_file:     data/exp/wrl_files/Mud/lobe110_mud_dpn.wrl
+  output_file:  data/exp/npz_files/exp_mud_npz/lobe110_mudmut_maxproj.npz
+Pros per lineage (bbox assignment):
+  lineage 0: 15 pros cells
+  lineage 1: 37 pros cells
+  lineage 2: 48 pros cells
+  lineage 3: 44 pros cells
+  lineage 4: 28 pros cells
+  lineage 5: 42 pros cells
+  lineage 6: 29 pros cells
+  lineage 7: 19 pros cells
+  lineage 8: 23 pros cells
+  lineage 9: 20 pros cells
+  lineage 10: 26 pros cells
+  lineage 11: 32 pros cells
+  lineage 12: 52 pros cells
+  lineage 13: 42 pros cells
+  lineage 14: 12 pros cells
+  lineage 15: 31 pros cells
+  lineage 16: 25 pros cells
+  lineage 17: 23 pros cells
+  lineage 18: 46 pros cells
+  unassigned pros: 0
+
+Dpn per lineage (bbox assignment):
+  lineage 0: 3 dpn cells
+  lineage 1: 4 dpn cells
+  lineage 2: 5 dpn cells
+  lineage 3: 3 dpn cells
+  lineage 4: 1 dpn cells
+  lineage 5: 3 dpn cells
+  lineage 6: 3 dpn cells
+  lineage 7: 1 dpn cells
+  lineage 8: 2 dpn cells
+  lineage 9: 2 dpn cells
+  lineage 10: 2 dpn cells
+  lineage 11: 0 dpn cells
+  lineage 12: 5 dpn cells
+  lineage 13: 1 dpn cells
+  lineage 14: 0 dpn cells
+  lineage 15: 2 dpn cells
+  lineage 16: 1 dpn cells
+  lineage 17: 3 dpn cells
+  lineage 18: 2 dpn cells
+  unassigned dpn: 50
+
+=== Lineage 0 ===
+
+=== Lineage 1 ===
+=== Lineage 1 appears disconnected; skipping ===
+
+=== Lineage 2 ===
+
+=== Lineage 3 ===
+
+=== Lineage 4 ===
+
+=== Lineage 5 ===
+
+=== Lineage 6 ===
+=== Lineage 6 appears disconnected; skipping ===
+
+=== Lineage 7 ===
+
+=== Lineage 8 ===
+=== Lineage 8 appears disconnected; skipping ===
+
+=== Lineage 9 ===
+
+=== Lineage 10 ===
+
+=== Lineage 11 ===
+[Lineage 11] No Dpn assigned; skipping.
+
+=== Lineage 12 ===
+
+=== Lineage 13 ===
+
+=== Lineage 14 ===
+[Lineage 14] No Dpn assigned; skipping.
+
+=== Lineage 15 ===
+
+=== Lineage 16 ===
+
+=== Lineage 17 ===
+=== Lineage 17 appears disconnected; skipping ===
+
+=== Lineage 18 ===
+
+Saved tensors → data/exp/npz_files/exp_mud_npz/lobe110_mudmut_maxproj.npz
+  labels shape: (13,), first few: ['mudmut' 'mudmut' 'mudmut' 'mudmut' 'mudmut']
+Pre-voxel lineage projection area summary (um^2): mean=375.458 std=93.187 N=13
+✅ Finished lobe 110: 13 lineages → data/exp/npz_files/exp_mud_npz/lobe110_mudmut_maxproj.npz
+
+================================================================================
+Processing Mud lobe 113
+================================================================================
+  lineage_file: data/exp/wrl_files/Mud/lobe113_mud_lineages.wrl
+  pros_file:    data/exp/wrl_files/Mud/lobe113_mud_pros.wrl
+  dpn_file:     data/exp/wrl_files/Mud/lobe113_mud_dpn.wrl
+  output_file:  data/exp/npz_files/exp_mud_npz/lobe113_mudmut_maxproj.npz
+Pros per lineage (bbox assignment):
+  lineage 0: 52 pros cells
+  lineage 1: 66 pros cells
+  lineage 2: 49 pros cells
+  lineage 3: 70 pros cells
+  lineage 4: 61 pros cells
+  lineage 5: 29 pros cells
+  lineage 6: 61 pros cells
+  lineage 7: 38 pros cells
+  lineage 8: 80 pros cells
+  lineage 9: 48 pros cells
+  lineage 10: 39 pros cells
+  lineage 11: 43 pros cells
+  lineage 12: 91 pros cells
+  lineage 13: 105 pros cells
+  lineage 14: 73 pros cells
+  unassigned pros: 4
+
+Dpn per lineage (bbox assignment):
+  lineage 0: 4 dpn cells
+  lineage 1: 3 dpn cells
+  lineage 2: 2 dpn cells
+  lineage 3: 2 dpn cells
+  lineage 4: 1 dpn cells
+  lineage 5: 1 dpn cells
+  lineage 6: 3 dpn cells
+  lineage 7: 2 dpn cells
+  lineage 8: 1 dpn cells
+  lineage 9: 2 dpn cells
+  lineage 10: 1 dpn cells
+  lineage 11: 3 dpn cells
+  lineage 12: 2 dpn cells
+  lineage 13: 2 dpn cells
+  lineage 14: 2 dpn cells
+  unassigned dpn: 55
+
+=== Lineage 0 ===
+
+=== Lineage 1 ===
+=== Lineage 1 appears disconnected; skipping ===
+
+=== Lineage 2 ===
+
+=== Lineage 3 ===
+
+=== Lineage 4 ===
+
+=== Lineage 5 ===
+
+=== Lineage 6 ===
+
+=== Lineage 7 ===
+
+=== Lineage 8 ===
+
+=== Lineage 9 ===
+
+=== Lineage 10 ===
+
+=== Lineage 11 ===
+
+=== Lineage 12 ===
+
+=== Lineage 13 ===
+=== Lineage 13 appears disconnected; skipping ===
+
+=== Lineage 14 ===
+
+Saved tensors → data/exp/npz_files/exp_mud_npz/lobe113_mudmut_maxproj.npz
+  labels shape: (13,), first few: ['mudmut' 'mudmut' 'mudmut' 'mudmut' 'mudmut']
+Pre-voxel lineage projection area summary (um^2): mean=335.927 std=56.424 N=13
+✅ Finished lobe 113: 13 lineages → data/exp/npz_files/exp_mud_npz/lobe113_mudmut_maxproj.npz
+
+================================================================================
+Processing Mud lobe 116
+================================================================================
+  lineage_file: data/exp/wrl_files/Mud/lobe116_mud_lineages.wrl
+  pros_file:    data/exp/wrl_files/Mud/lobe116_mud_pros.wrl
+  dpn_file:     data/exp/wrl_files/Mud/lobe116_mud_dpn.wrl
+  output_file:  data/exp/npz_files/exp_mud_npz/lobe116_mudmut_maxproj.npz
+Pros per lineage (bbox assignment):
+  lineage 0: 11 pros cells
+  lineage 1: 11 pros cells
+  lineage 2: 33 pros cells
+  lineage 3: 20 pros cells
+  lineage 4: 19 pros cells
+  lineage 5: 13 pros cells
+  lineage 6: 21 pros cells
+  lineage 7: 14 pros cells
+  lineage 8: 36 pros cells
+  lineage 9: 23 pros cells
+  lineage 10: 14 pros cells
+  lineage 11: 26 pros cells
+  lineage 12: 8 pros cells
+  lineage 13: 47 pros cells
+  unassigned pros: 2
+
+Dpn per lineage (bbox assignment):
+  lineage 0: 1 dpn cells
+  lineage 1: 2 dpn cells
+  lineage 2: 1 dpn cells
+  lineage 3: 1 dpn cells
+  lineage 4: 2 dpn cells
+  lineage 5: 1 dpn cells
+  lineage 6: 1 dpn cells
+  lineage 7: 2 dpn cells
+  lineage 8: 2 dpn cells
+  lineage 9: 1 dpn cells
+  lineage 10: 2 dpn cells
+  lineage 11: 1 dpn cells
+  lineage 12: 1 dpn cells
+  lineage 13: 1 dpn cells
+  unassigned dpn: 25
+
+=== Lineage 0 ===
+
+=== Lineage 1 ===
+=== Lineage 1 appears disconnected; skipping ===
+
+=== Lineage 2 ===
+
+=== Lineage 3 ===
+
+=== Lineage 4 ===
+
+=== Lineage 5 ===
+
+=== Lineage 6 ===
+
+=== Lineage 7 ===
+
+=== Lineage 8 ===
+
+=== Lineage 9 ===
+=== Lineage 9 appears disconnected; skipping ===
+
+=== Lineage 10 ===
+
+=== Lineage 11 ===
+
+=== Lineage 12 ===
+
+=== Lineage 13 ===
+
+Saved tensors → data/exp/npz_files/exp_mud_npz/lobe116_mudmut_maxproj.npz
+  labels shape: (12,), first few: ['mudmut' 'mudmut' 'mudmut' 'mudmut' 'mudmut']
+Pre-voxel lineage projection area summary (um^2): mean=313.608 std=102.384 N=12
+✅ Finished lobe 116: 12 lineages → data/exp/npz_files/exp_mud_npz/lobe116_mudmut_maxproj.npz
+
+================================================================================
+Processing Mud lobe 119
+================================================================================
+  lineage_file: data/exp/wrl_files/Mud/lobe119_mud_lineages.wrl
+  pros_file:    data/exp/wrl_files/Mud/lobe119_mud_pros.wrl
+  dpn_file:     data/exp/wrl_files/Mud/lobe119_mud_dpn.wrl
+  output_file:  data/exp/npz_files/exp_mud_npz/lobe119_mudmut_maxproj.npz
+Pros per lineage (bbox assignment):
+  lineage 0: 29 pros cells
+  lineage 1: 34 pros cells
+  lineage 2: 60 pros cells
+  lineage 3: 47 pros cells
+  lineage 4: 52 pros cells
+  lineage 5: 12 pros cells
+  lineage 6: 33 pros cells
+  lineage 7: 41 pros cells
+  lineage 8: 25 pros cells
+  lineage 9: 73 pros cells
+  lineage 10: 14 pros cells
+  lineage 11: 40 pros cells
+  lineage 12: 25 pros cells
+  lineage 13: 20 pros cells
+  lineage 14: 29 pros cells
+  unassigned pros: 4
+
+Dpn per lineage (bbox assignment):
+  lineage 0: 1 dpn cells
+  lineage 1: 6 dpn cells
+  lineage 2: 3 dpn cells
+  lineage 3: 2 dpn cells
+  lineage 4: 2 dpn cells
+  lineage 5: 1 dpn cells
+  lineage 6: 0 dpn cells
+  lineage 7: 2 dpn cells
+  lineage 8: 3 dpn cells
+  lineage 9: 3 dpn cells
+  lineage 10: 2 dpn cells
+  lineage 11: 3 dpn cells
+  lineage 12: 3 dpn cells
+  lineage 13: 2 dpn cells
+  lineage 14: 1 dpn cells
+  unassigned dpn: 15
+
+=== Lineage 0 ===
+
+=== Lineage 1 ===
+
+=== Lineage 2 ===
+
+=== Lineage 3 ===
+
+=== Lineage 4 ===
+
+=== Lineage 5 ===
+
+=== Lineage 6 ===
+[Lineage 6] No Dpn assigned; skipping.
+
+=== Lineage 7 ===
+
+=== Lineage 8 ===
+
+=== Lineage 9 ===
+
+=== Lineage 10 ===
+
+=== Lineage 11 ===
+
+=== Lineage 12 ===
+
+=== Lineage 13 ===
+
+=== Lineage 14 ===
+
+Saved tensors → data/exp/npz_files/exp_mud_npz/lobe119_mudmut_maxproj.npz
+  labels shape: (14,), first few: ['mudmut' 'mudmut' 'mudmut' 'mudmut' 'mudmut']
+Pre-voxel lineage projection area summary (um^2): mean=410.541 std=91.309 N=14
+✅ Finished lobe 119: 14 lineages → data/exp/npz_files/exp_mud_npz/lobe119_mudmut_maxproj.npz
+
+MUD pre-voxel lineage projection area summary (um^2): mean=360.748 std=94.969 N=52
+
+================================================================================
+Processing Nanobody lobe 16
+================================================================================
+  lineage_file: data/exp/wrl_files/Nanobody/lobe16_Nanobody_lineages.wrl
+  pros_file:    data/exp/wrl_files/Nanobody/lobe16_Nanobody_pros.wrl
+  dpn_file:     data/exp/wrl_files/Nanobody/lobe16_Nanobody_dpn.wrl
+  output_file:  data/exp/npz_files/exp_nanobody_npz/lobe16_nanobody_maxproj.npz
+Pros per lineage (bbox assignment):
+  lineage 0: 42 pros cells
+  lineage 1: 38 pros cells
+  lineage 2: 16 pros cells
+  lineage 3: 31 pros cells
+  lineage 4: 10 pros cells
+  lineage 5: 3 pros cells
+  lineage 6: 39 pros cells
+  lineage 7: 6 pros cells
+  lineage 8: 32 pros cells
+  lineage 9: 11 pros cells
+  lineage 10: 20 pros cells
+  unassigned pros: 1
+
+Dpn per lineage (bbox assignment):
+  lineage 0: 3 dpn cells
+  lineage 1: 2 dpn cells
+  lineage 2: 2 dpn cells
+  lineage 3: 1 dpn cells
+  lineage 4: 0 dpn cells
+  lineage 5: 0 dpn cells
+  lineage 6: 3 dpn cells
+  lineage 7: 0 dpn cells
+  lineage 8: 1 dpn cells
+  lineage 9: 1 dpn cells
+  lineage 10: 1 dpn cells
+  unassigned dpn: 7
+
+=== Lineage 0 ===
+
+=== Lineage 1 ===
+
+=== Lineage 2 ===
+
+=== Lineage 3 ===
+
+=== Lineage 4 ===
+[Lineage 4] No Dpn assigned; skipping.
+
+=== Lineage 5 ===
+[Lineage 5] No Dpn assigned; skipping.
+
+=== Lineage 6 ===
+
+=== Lineage 7 ===
+[Lineage 7] No Dpn assigned; skipping.
+
+=== Lineage 8 ===
+
+=== Lineage 9 ===
+
+=== Lineage 10 ===
+
+Saved tensors → data/exp/npz_files/exp_nanobody_npz/lobe16_nanobody_maxproj.npz
+  labels shape: (8,), first few: ['nanobody' 'nanobody' 'nanobody' 'nanobody' 'nanobody']
+Pre-voxel lineage projection area summary (um^2): mean=416.422 std=88.938 N=8
+✅ Finished Nanobody lobe 16: 8 lineages → data/exp/npz_files/exp_nanobody_npz/lobe16_nanobody_maxproj.npz
+
+================================================================================
+Processing Nanobody lobe 17
+================================================================================
+  lineage_file: data/exp/wrl_files/Nanobody/lobe17_Nanobody_lineages.wrl
+  pros_file:    data/exp/wrl_files/Nanobody/lobe17_Nanobody_pros.wrl
+  dpn_file:     data/exp/wrl_files/Nanobody/lobe17_Nanobody_dpn.wrl
+  output_file:  data/exp/npz_files/exp_nanobody_npz/lobe17_nanobody_maxproj.npz
+Pros per lineage (bbox assignment):
+  lineage 0: 30 pros cells
+  lineage 1: 0 pros cells
+  lineage 2: 0 pros cells
+  lineage 3: 13 pros cells
+  lineage 4: 0 pros cells
+  lineage 5: 33 pros cells
+  lineage 6: 32 pros cells
+  lineage 7: 13 pros cells
+  lineage 8: 16 pros cells
+  lineage 9: 23 pros cells
+  lineage 10: 34 pros cells
+  lineage 11: 37 pros cells
+  lineage 12: 25 pros cells
+  lineage 13: 0 pros cells
+  lineage 14: 0 pros cells
+  lineage 15: 7 pros cells
+  lineage 16: 17 pros cells
+  unassigned pros: 1
+
+Dpn per lineage (bbox assignment):
+  lineage 0: 1 dpn cells
+  lineage 1: 0 dpn cells
+  lineage 2: 0 dpn cells
+  lineage 3: 0 dpn cells
+  lineage 4: 0 dpn cells
+  lineage 5: 3 dpn cells
+  lineage 6: 1 dpn cells
+  lineage 7: 1 dpn cells
+  lineage 8: 0 dpn cells
+  lineage 9: 1 dpn cells
+  lineage 10: 0 dpn cells
+  lineage 11: 1 dpn cells
+  lineage 12: 1 dpn cells
+  lineage 13: 0 dpn cells
+  lineage 14: 0 dpn cells
+  lineage 15: 0 dpn cells
+  lineage 16: 0 dpn cells
+  unassigned dpn: 24
+
+=== Lineage 0 ===
+
+=== Lineage 1 ===
+[Lineage 1] No Dpn assigned; skipping.
+
+=== Lineage 2 ===
+[Lineage 2] No Dpn assigned; skipping.
+
+=== Lineage 3 ===
+[Lineage 3] No Dpn assigned; skipping.
+
+=== Lineage 4 ===
+[Lineage 4] No Dpn assigned; skipping.
+
+=== Lineage 5 ===
+
+=== Lineage 6 ===
+
+=== Lineage 7 ===
+
+=== Lineage 8 ===
+[Lineage 8] No Dpn assigned; skipping.
+
+=== Lineage 9 ===
+
+=== Lineage 10 ===
+[Lineage 10] No Dpn assigned; skipping.
+
+=== Lineage 11 ===
+
+=== Lineage 12 ===
+
+=== Lineage 13 ===
+[Lineage 13] No Dpn assigned; skipping.
+
+=== Lineage 14 ===
+[Lineage 14] No Dpn assigned; skipping.
+
+=== Lineage 15 ===
+[Lineage 15] No Dpn assigned; skipping.
+
+=== Lineage 16 ===
+[Lineage 16] No Dpn assigned; skipping.
+
+Saved tensors → data/exp/npz_files/exp_nanobody_npz/lobe17_nanobody_maxproj.npz
+  labels shape: (7,), first few: ['nanobody' 'nanobody' 'nanobody' 'nanobody' 'nanobody']
+Pre-voxel lineage projection area summary (um^2): mean=354.976 std=24.600 N=7
+✅ Finished Nanobody lobe 17: 7 lineages → data/exp/npz_files/exp_nanobody_npz/lobe17_nanobody_maxproj.npz
+
+================================================================================
+Processing Nanobody lobe 19
+================================================================================
+  lineage_file: data/exp/wrl_files/Nanobody/lobe19_Nanobody_lineages.wrl
+  pros_file:    data/exp/wrl_files/Nanobody/lobe19_Nanobody_pros.wrl
+  dpn_file:     data/exp/wrl_files/Nanobody/lobe19_Nanobody_dpn.wrl
+  output_file:  data/exp/npz_files/exp_nanobody_npz/lobe19_nanobody_maxproj.npz
+Pros per lineage (bbox assignment):
+  lineage 0: 42 pros cells
+  lineage 1: 9 pros cells
+  lineage 2: 19 pros cells
+  lineage 3: 20 pros cells
+  lineage 4: 6 pros cells
+  lineage 5: 11 pros cells
+  lineage 6: 9 pros cells
+  lineage 7: 11 pros cells
+  unassigned pros: 0
+
+Dpn per lineage (bbox assignment):
+  lineage 0: 4 dpn cells
+  lineage 1: 1 dpn cells
+  lineage 2: 2 dpn cells
+  lineage 3: 2 dpn cells
+  lineage 4: 1 dpn cells
+  lineage 5: 2 dpn cells
+  lineage 6: 0 dpn cells
+  lineage 7: 2 dpn cells
+  unassigned dpn: 15
+
+=== Lineage 0 ===
+
+=== Lineage 1 ===
+
+=== Lineage 2 ===
+
+=== Lineage 3 ===
+
+=== Lineage 4 ===
+
+=== Lineage 5 ===
+
+=== Lineage 6 ===
+[Lineage 6] No Dpn assigned; skipping.
+
+=== Lineage 7 ===
+=== Lineage 7 appears disconnected; skipping ===
+
+Saved tensors → data/exp/npz_files/exp_nanobody_npz/lobe19_nanobody_maxproj.npz
+  labels shape: (6,), first few: ['nanobody' 'nanobody' 'nanobody' 'nanobody' 'nanobody']
+Pre-voxel lineage projection area summary (um^2): mean=259.841 std=91.574 N=6
+✅ Finished Nanobody lobe 19: 6 lineages → data/exp/npz_files/exp_nanobody_npz/lobe19_nanobody_maxproj.npz
+
+================================================================================
+Processing Nanobody lobe 20
+================================================================================
+  lineage_file: data/exp/wrl_files/Nanobody/lobe20_Nanobody_lineages.wrl
+  pros_file:    data/exp/wrl_files/Nanobody/lobe20_Nanobody_pros.wrl
+  dpn_file:     data/exp/wrl_files/Nanobody/lobe20_Nanobody_dpn.wrl
+  output_file:  data/exp/npz_files/exp_nanobody_npz/lobe20_nanobody_maxproj.npz
+Pros per lineage (bbox assignment):
+  lineage 0: 29 pros cells
+  lineage 1: 13 pros cells
+  lineage 2: 36 pros cells
+  lineage 3: 24 pros cells
+  lineage 4: 11 pros cells
+  lineage 5: 24 pros cells
+  lineage 6: 21 pros cells
+  lineage 7: 24 pros cells
+  lineage 8: 27 pros cells
+  lineage 9: 31 pros cells
+  lineage 10: 13 pros cells
+  lineage 11: 14 pros cells
+  lineage 12: 15 pros cells
+  lineage 13: 9 pros cells
+  lineage 14: 34 pros cells
+  lineage 15: 12 pros cells
+  lineage 16: 19 pros cells
+  lineage 17: 2 pros cells
+  unassigned pros: 2
+
+Dpn per lineage (bbox assignment):
+  lineage 0: 2 dpn cells
+  lineage 1: 1 dpn cells
+  lineage 2: 2 dpn cells
+  lineage 3: 4 dpn cells
+  lineage 4: 0 dpn cells
+  lineage 5: 1 dpn cells
+  lineage 6: 1 dpn cells
+  lineage 7: 5 dpn cells
+  lineage 8: 1 dpn cells
+  lineage 9: 1 dpn cells
+  lineage 10: 1 dpn cells
+  lineage 11: 2 dpn cells
+  lineage 12: 1 dpn cells
+  lineage 13: 1 dpn cells
+  lineage 14: 1 dpn cells
+  lineage 15: 1 dpn cells
+  lineage 16: 1 dpn cells
+  lineage 17: 1 dpn cells
+  unassigned dpn: 30
+
+=== Lineage 0 ===
+
+=== Lineage 1 ===
+=== Lineage 1 appears disconnected; skipping ===
+
+=== Lineage 2 ===
+=== Lineage 2 appears disconnected; skipping ===
+
+=== Lineage 3 ===
+
+=== Lineage 4 ===
+=== Lineage 4 appears disconnected; skipping ===
+
+=== Lineage 5 ===
+
+=== Lineage 6 ===
+=== Lineage 6 appears disconnected; skipping ===
+
+=== Lineage 7 ===
+=== Lineage 7 appears disconnected; skipping ===
+
+=== Lineage 8 ===
+
+=== Lineage 9 ===
+=== Lineage 9 appears disconnected; skipping ===
+
+=== Lineage 10 ===
+=== Lineage 10 appears disconnected; skipping ===
+
+=== Lineage 11 ===
+=== Lineage 11 appears disconnected; skipping ===
+
+=== Lineage 12 ===
+
+=== Lineage 13 ===
+=== Lineage 13 appears disconnected; skipping ===
+
+=== Lineage 14 ===
+
+=== Lineage 15 ===
+=== Lineage 15 appears disconnected; skipping ===
+
+=== Lineage 16 ===
+
+=== Lineage 17 ===
+
+Saved tensors → data/exp/npz_files/exp_nanobody_npz/lobe20_nanobody_maxproj.npz
+  labels shape: (8,), first few: ['nanobody' 'nanobody' 'nanobody' 'nanobody' 'nanobody']
+Pre-voxel lineage projection area summary (um^2): mean=288.714 std=73.477 N=8
+✅ Finished Nanobody lobe 20: 8 lineages → data/exp/npz_files/exp_nanobody_npz/lobe20_nanobody_maxproj.npz
+
+================================================================================
+Processing Nanobody lobe 21
+================================================================================
+  lineage_file: data/exp/wrl_files/Nanobody/lobe21_Nanobody_lineages.wrl
+  pros_file:    data/exp/wrl_files/Nanobody/lobe21_Nanobody_pros.wrl
+  dpn_file:     data/exp/wrl_files/Nanobody/lobe21_Nanobody_dpn.wrl
+  output_file:  data/exp/npz_files/exp_nanobody_npz/lobe21_nanobody_maxproj.npz
+Pros per lineage (bbox assignment):
+  lineage 0: 18 pros cells
+  lineage 1: 20 pros cells
+  lineage 2: 39 pros cells
+  lineage 3: 12 pros cells
+  lineage 4: 15 pros cells
+  lineage 5: 22 pros cells
+  lineage 6: 27 pros cells
+  lineage 7: 31 pros cells
+  lineage 8: 32 pros cells
+  lineage 9: 8 pros cells
+  lineage 10: 16 pros cells
+  lineage 11: 13 pros cells
+  lineage 12: 18 pros cells
+  unassigned pros: 0
+
+Dpn per lineage (bbox assignment):
+  lineage 0: 0 dpn cells
+  lineage 1: 1 dpn cells
+  lineage 2: 2 dpn cells
+  lineage 3: 2 dpn cells
+  lineage 4: 1 dpn cells
+  lineage 5: 1 dpn cells
+  lineage 6: 0 dpn cells
+  lineage 7: 2 dpn cells
+  lineage 8: 3 dpn cells
+  lineage 9: 1 dpn cells
+  lineage 10: 0 dpn cells
+  lineage 11: 0 dpn cells
+  lineage 12: 2 dpn cells
+  unassigned dpn: 21
+
+=== Lineage 0 ===
+=== Lineage 0 appears disconnected; skipping ===
+
+=== Lineage 1 ===
+=== Lineage 1 appears disconnected; skipping ===
+
+=== Lineage 2 ===
+=== Lineage 2 appears disconnected; skipping ===
+
+=== Lineage 3 ===
+=== Lineage 3 appears disconnected; skipping ===
+
+=== Lineage 4 ===
+
+=== Lineage 5 ===
+=== Lineage 5 appears disconnected; skipping ===
+
+=== Lineage 6 ===
+=== Lineage 6 appears disconnected; skipping ===
+
+=== Lineage 7 ===
+
+=== Lineage 8 ===
+=== Lineage 8 appears disconnected; skipping ===
+
+=== Lineage 9 ===
+=== Lineage 9 appears disconnected; skipping ===
+
+=== Lineage 10 ===
+[Lineage 10] No Dpn assigned; skipping.
+
+=== Lineage 11 ===
+[Lineage 11] No Dpn assigned; skipping.
+
+=== Lineage 12 ===
+=== Lineage 12 appears disconnected; skipping ===
+
+Saved tensors → data/exp/npz_files/exp_nanobody_npz/lobe21_nanobody_maxproj.npz
+  labels shape: (2,), first few: ['nanobody' 'nanobody']
+Pre-voxel lineage projection area summary (um^2): mean=299.248 std=105.388 N=2
+✅ Finished Nanobody lobe 21: 2 lineages → data/exp/npz_files/exp_nanobody_npz/lobe21_nanobody_maxproj.npz
+
+================================================================================
+Processing Nanobody lobe 22
+================================================================================
+  lineage_file: data/exp/wrl_files/Nanobody/lobe22_Nanobody_lineages.wrl
+  pros_file:    data/exp/wrl_files/Nanobody/lobe22_Nanobody_pros.wrl
+  dpn_file:     data/exp/wrl_files/Nanobody/lobe22_Nanobody_dpn.wrl
+  output_file:  data/exp/npz_files/exp_nanobody_npz/lobe22_nanobody_maxproj.npz
+Pros per lineage (bbox assignment):
+  lineage 0: 21 pros cells
+  lineage 1: 12 pros cells
+  lineage 2: 44 pros cells
+  lineage 3: 24 pros cells
+  lineage 4: 37 pros cells
+  lineage 5: 38 pros cells
+  lineage 6: 17 pros cells
+  lineage 7: 15 pros cells
+  lineage 8: 34 pros cells
+  lineage 9: 29 pros cells
+  unassigned pros: 2
+
+Dpn per lineage (bbox assignment):
+  lineage 0: 0 dpn cells
+  lineage 1: 0 dpn cells
+  lineage 2: 0 dpn cells
+  lineage 3: 0 dpn cells
+  lineage 4: 2 dpn cells
+  lineage 5: 1 dpn cells
+  lineage 6: 2 dpn cells
+  lineage 7: 1 dpn cells
+  lineage 8: 1 dpn cells
+  lineage 9: 2 dpn cells
+  unassigned dpn: 20
+
+=== Lineage 0 ===
+[Lineage 0] No Dpn assigned; skipping.
+
+=== Lineage 1 ===
+[Lineage 1] No Dpn assigned; skipping.
+
+=== Lineage 2 ===
+[Lineage 2] No Dpn assigned; skipping.
+
+=== Lineage 3 ===
+[Lineage 3] No Dpn assigned; skipping.
+
+=== Lineage 4 ===
+
+=== Lineage 5 ===
+
+=== Lineage 6 ===
+
+=== Lineage 7 ===
+
+=== Lineage 8 ===
+
+=== Lineage 9 ===
+
+Saved tensors → data/exp/npz_files/exp_nanobody_npz/lobe22_nanobody_maxproj.npz
+  labels shape: (6,), first few: ['nanobody' 'nanobody' 'nanobody' 'nanobody' 'nanobody']
+Pre-voxel lineage projection area summary (um^2): mean=342.306 std=50.656 N=6
+✅ Finished Nanobody lobe 22: 6 lineages → data/exp/npz_files/exp_nanobody_npz/lobe22_nanobody_maxproj.npz
+
+NANOBODY pre-voxel lineage projection area summary (um^2): mean=333.441 std=91.279 N=37
+
+Loading WT file: data/exp/npz_files/exp_wt_npz/lobe1_wt_maxproj.npz
+WT shapes:
+  geo: (10, 800, 800, 2)
+  counts: (10, 2)
+  lineage_ids: (10,)
+  ds: 0.097
+  labels: (10,), unique: ['wt']
+
+WT count summary:
+  N_dpn  min/max: 1.0 1.0
+  N_pros min/max: 17.0 77.0
+
+Value check for WT:
+  min: 0.0 max: 1.0
+  unique values (first 10): [0. 1.]
+
+Plotting sample WT lineage...
+WT sample idx=8
+  scalar counts:   N_dpn = 1, N_pros = 36
+  voxel occupancy: nb_mask voxels = 6070, union_mask voxels = 58887
+
+Loading Mudmut file: data/exp/npz_files/exp_mud_npz/lobe110_mudmut_maxproj.npz
+Mudmut shapes:
+  geo: (13, 800, 800, 2)
+  counts: (13, 2)
+  lineage_ids: (13,)
+  ds: 0.097
+  labels: (13,), unique: ['mudmut']
+
+Mudmut count summary:
+  N_dpn  min/max: 1.0 5.0
+  N_pros min/max: 15.0 52.0
+
+Value check for Mudmut:
+  min: 0.0 max: 1.0
+  unique values (first 10): [0. 1.]
+
+Plotting sample Mudmut lineage...
+Mudmut sample idx=11
+  scalar counts:   N_dpn = 1, N_pros = 25
+  voxel occupancy: nb_mask voxels = 4871, union_mask voxels = 31201
+
+Loading Nanobody file: data/exp/npz_files/exp_nanobody_npz/lobe16_nanobody_maxproj.npz
+Nanobody shapes:
+  geo: (8, 800, 800, 2)
+  counts: (8, 2)
+  lineage_ids: (8,)
+  ds: 0.097
+  labels: (8,), unique: ['nanobody']
+
+Nanobody count summary:
+  N_dpn  min/max: 1.0 3.0
+  N_pros min/max: 11.0 41.0
+
+Value check for Nanobody:
+  min: 0.0 max: 1.0
+  unique values (first 10): [0. 1.]
+
+Plotting sample Nanobody lineage...
+Nanobody sample idx=0
+  scalar counts:   N_dpn = 3, N_pros = 41
+  voxel occupancy: nb_mask voxels = 11274, union_mask voxels = 54640
+
+Sanity check complete.
+
