@@ -2,22 +2,13 @@ from __future__ import annotations
 
 import argparse
 import csv
-import math
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable
-
 import numpy as np
 
-from src.expdata_geo_helpers import (
-    assign_cells_to_lineages_strict,
-    lineage_is_connected,
-    load_vrml_meshes,
-    mesh_bbox,
-    project_lineage_polygon_2d,
-    to_trimesh_list,
-)
-
+from src.expdata_geo_helpers import project_lineage_polygon_2d
+from src.npz_metrics import mean_std_n
+from src.wrl_lineage_filtering import WrlLineageFilterConfig, load_filtered_wrl_lobe
 
 CONDITIONS = {
     "wt": {
@@ -58,26 +49,7 @@ class LineageRecord:
     lineage_volume_um3: float
     lineage_projected_area_um2: float
     avg_neuroblast_volume_um3: float
-    est_avg_neuroblast_area_um2: float
-
-
-def sphere_radius_from_volume(volume_um3: float) -> float:
-    if volume_um3 <= 0.0:
-        return 0.0
-    return ((3.0 * volume_um3) / (4.0 * math.pi)) ** (1.0 / 3.0)
-
-
-def circle_area_from_radius(radius_um: float) -> float:
-    if radius_um <= 0.0:
-        return 0.0
-    return math.pi * radius_um * radius_um
-
-
-def mean_std_n(values: Iterable[float]) -> tuple[float, float, int]:
-    arr = np.asarray(list(values), dtype=float)
-    if arr.size == 0:
-        return float("nan"), float("nan"), 0
-    return float(arr.mean()), float(arr.std()), int(arr.size)
+    avg_neuroblast_projected_area_um2: float
 
 
 def safe_mesh_volume_um3(mesh) -> float:
@@ -88,7 +60,13 @@ def safe_mesh_volume_um3(mesh) -> float:
 
 
 def lineage_projected_area_um2(mesh) -> float:
+    return mesh_projected_area_um2(mesh)
+
+
+def mesh_projected_area_um2(mesh) -> float:
     vertices = mesh.vertices
+    if len(vertices) < 3:
+        return float("nan")
     mean_v = vertices.mean(axis=0)
     centered = vertices - mean_v
     _, _, vt = np.linalg.svd(centered, full_matrices=False)
@@ -103,15 +81,6 @@ def lineage_projected_area_um2(mesh) -> float:
     if poly is None or poly.is_empty:
         return float("nan")
     return float(poly.area)
-
-
-def load_triplet(lineage_file: Path, pros_file: Path, dpn_file: Path):
-    lineage_tm = to_trimesh_list(load_vrml_meshes(lineage_file))
-    pros_tm = to_trimesh_list(load_vrml_meshes(pros_file))
-    dpn_tm = to_trimesh_list(load_vrml_meshes(dpn_file))
-    return lineage_tm, pros_tm, dpn_tm
-
-
 def analyze_lobe(
     condition_key: str,
     lobe: int,
@@ -126,39 +95,29 @@ def analyze_lobe(
     pros_file = base_dir / cfg["pros_template"].format(lobe=lobe)
     dpn_file = base_dir / cfg["dpn_template"].format(lobe=lobe)
 
-    lineage_tm, pros_tm, dpn_tm = load_triplet(lineage_file, pros_file, dpn_file)
-
-    lineage_bboxes = [mesh_bbox(m) for m in lineage_tm]
-    pros_to_lineage_idx, _ = assign_cells_to_lineages_strict(
-        pros_tm, lineage_bboxes, min_fraction=min_pros_fraction
+    filtered_lobe = load_filtered_wrl_lobe(
+        lineage_file,
+        pros_file,
+        dpn_file,
+        config=WrlLineageFilterConfig(
+            min_lineage_faces=min_lineage_faces,
+            min_pros_fraction=min_pros_fraction,
+            min_dpn_fraction=min_dpn_fraction,
+        ),
     )
-    dpn_to_lineage_idx, _ = assign_cells_to_lineages_strict(
-        dpn_tm, lineage_bboxes, min_fraction=min_dpn_fraction
-    )
+    lineage_tm = filtered_lobe.lineage_meshes
+    pros_tm = filtered_lobe.pros_meshes
+    dpn_tm = filtered_lobe.dpn_meshes
 
     records: list[LineageRecord] = []
-    stats = {
-        "lineages_total": len(lineage_tm),
-        "lineages_kept": 0,
-        "lineages_skipped_disconnected": 0,
-        "lineages_skipped_no_dpn": 0,
-    }
+    stats = dict(filtered_lobe.stats)
 
-    for lineage_index, lineage_mesh in enumerate(lineage_tm):
-        if not lineage_is_connected(lineage_mesh, min_faces=min_lineage_faces):
-            stats["lineages_skipped_disconnected"] += 1
-            continue
-
-        dpn_indices = np.where(dpn_to_lineage_idx == lineage_index)[0]
-        pros_indices = np.where(pros_to_lineage_idx == lineage_index)[0]
-
-        if dpn_indices.size == 0:
-            stats["lineages_skipped_no_dpn"] += 1
-            continue
-
-        dpn_meshes = [dpn_tm[i] for i in dpn_indices]
-        n_dpn = len(dpn_meshes)
-        n_pros = int(pros_indices.size)
+    for filtered_lineage in filtered_lobe.kept_lineages:
+        lineage_index = filtered_lineage.lineage_index
+        lineage_mesh = filtered_lineage.lineage_mesh
+        dpn_meshes = [dpn_tm[i] for i in filtered_lineage.dpn_indices]
+        n_dpn = filtered_lineage.n_dpn
+        n_pros = filtered_lineage.n_pros
         total_cell_count = n_dpn + n_pros
 
         lineage_volume = safe_mesh_volume_um3(lineage_mesh)
@@ -168,9 +127,12 @@ def analyze_lobe(
             [safe_mesh_volume_um3(mesh) for mesh in dpn_meshes],
             dtype=float,
         )
+        dpn_projected_areas = np.asarray(
+            [mesh_projected_area_um2(mesh) for mesh in dpn_meshes],
+            dtype=float,
+        )
         avg_nb_volume = float(np.nanmean(dpn_volumes))
-        eq_radius = sphere_radius_from_volume(avg_nb_volume)
-        est_nb_area = circle_area_from_radius(eq_radius)
+        avg_nb_projected_area = float(np.nanmean(dpn_projected_areas))
 
         records.append(
             LineageRecord(
@@ -183,15 +145,16 @@ def analyze_lobe(
                 lineage_volume_um3=lineage_volume,
                 lineage_projected_area_um2=proj_area,
                 avg_neuroblast_volume_um3=avg_nb_volume,
-                est_avg_neuroblast_area_um2=est_nb_area,
+                avg_neuroblast_projected_area_um2=avg_nb_projected_area,
             )
         )
-        stats["lineages_kept"] += 1
 
     return records, stats
 
 
-def summarize_condition(records: list[LineageRecord], stats: dict[str, int]) -> dict[str, object]:
+def summarize_condition(
+    records: list[LineageRecord], stats: dict[str, int]
+) -> dict[str, object]:
     return {
         "condition": records[0].condition if records else "",
         "lineages_total": stats["lineages_total"],
@@ -200,12 +163,24 @@ def summarize_condition(records: list[LineageRecord], stats: dict[str, int]) -> 
         "lineages_skipped_no_dpn": stats["lineages_skipped_no_dpn"],
         "mean_lineage_volume_um3": mean_std_n(r.lineage_volume_um3 for r in records)[0],
         "std_lineage_volume_um3": mean_std_n(r.lineage_volume_um3 for r in records)[1],
-        "mean_lineage_projected_area_um2": mean_std_n(r.lineage_projected_area_um2 for r in records)[0],
-        "std_lineage_projected_area_um2": mean_std_n(r.lineage_projected_area_um2 for r in records)[1],
-        "mean_avg_neuroblast_volume_um3": mean_std_n(r.avg_neuroblast_volume_um3 for r in records)[0],
-        "std_avg_neuroblast_volume_um3": mean_std_n(r.avg_neuroblast_volume_um3 for r in records)[1],
-        "mean_est_avg_neuroblast_area_um2": mean_std_n(r.est_avg_neuroblast_area_um2 for r in records)[0],
-        "std_est_avg_neuroblast_area_um2": mean_std_n(r.est_avg_neuroblast_area_um2 for r in records)[1],
+        "mean_lineage_projected_area_um2": mean_std_n(
+            r.lineage_projected_area_um2 for r in records
+        )[0],
+        "std_lineage_projected_area_um2": mean_std_n(
+            r.lineage_projected_area_um2 for r in records
+        )[1],
+        "mean_avg_neuroblast_volume_um3": mean_std_n(
+            r.avg_neuroblast_volume_um3 for r in records
+        )[0],
+        "std_avg_neuroblast_volume_um3": mean_std_n(
+            r.avg_neuroblast_volume_um3 for r in records
+        )[1],
+        "mean_avg_neuroblast_projected_area_um2": mean_std_n(
+            r.avg_neuroblast_projected_area_um2 for r in records
+        )[0],
+        "std_avg_neuroblast_projected_area_um2": mean_std_n(
+            r.avg_neuroblast_projected_area_um2 for r in records
+        )[1],
         "mean_total_cell_count": mean_std_n(r.total_cell_count for r in records)[0],
         "std_total_cell_count": mean_std_n(r.total_cell_count for r in records)[1],
         "n_lineages_in_summary": len(records),
@@ -224,7 +199,7 @@ def write_per_lineage_csv(path: Path, records: list[LineageRecord]) -> None:
         "lineage_volume_um3",
         "lineage_projected_area_um2",
         "avg_neuroblast_volume_um3",
-        "est_avg_neuroblast_area_um2",
+        "avg_neuroblast_projected_area_um2",
     ]
     with path.open("w", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
@@ -247,8 +222,8 @@ def write_summary_csv(path: Path, summaries: list[dict[str, object]]) -> None:
         "std_lineage_projected_area_um2",
         "mean_avg_neuroblast_volume_um3",
         "std_avg_neuroblast_volume_um3",
-        "mean_est_avg_neuroblast_area_um2",
-        "std_est_avg_neuroblast_area_um2",
+        "mean_avg_neuroblast_projected_area_um2",
+        "std_avg_neuroblast_projected_area_um2",
         "mean_total_cell_count",
         "std_total_cell_count",
         "n_lineages_in_summary",
@@ -288,9 +263,9 @@ def print_condition_summary(summary: dict[str, object]) -> None:
         f" N={summary['n_lineages_in_summary']}"
     )
     print(
-        "Estimated average neuroblast area (um^2):"
-        f" mean={summary['mean_est_avg_neuroblast_area_um2']:.3f}"
-        f" std={summary['std_est_avg_neuroblast_area_um2']:.3f}"
+        "Average neuroblast projected area in 2D (um^2):"
+        f" mean={summary['mean_avg_neuroblast_projected_area_um2']:.3f}"
+        f" std={summary['std_avg_neuroblast_projected_area_um2']:.3f}"
         f" N={summary['n_lineages_in_summary']}"
     )
     print(

@@ -7,12 +7,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import mannwhitneyu, kruskal
 
+from src.npz_metrics import compute_metrics
 
 # -------------------------------
 # Config
 # -------------------------------
 SIM_NPZ = Path("data/sim/sim_geo_counts_endpoints.npz")
-SIM_CONDITIONS = [f"{i:02d}" for i in range(1, 41)]
+SIM_CONDITIONS = [f"sim{i:02d}" for i in range(1, 41)]
+DEFAULT_PROJECTED_DS_UM = 0.3
 EXP_NPZ_DIRS = {
     "wt": Path("data/exp/npz_files/exp_wt_npz"),
     "mud": Path("data/exp/npz_files/exp_mud_npz"),
@@ -25,16 +27,27 @@ GENOTYPES = ["wt", "mud"]
 # metrics of interest (keys -> pretty title, x label)
 METRICS = {
     "cell_counts_total": ("Total cell counts per lineage", "cells per lineage"),
-    "lineage_volumes": ("Lineage volumes per lineage", "voxels (dpn ∪ pros-only)"),
-    "avg_nb_volume": ("Average neuroblast volume per lineage", "dpn_voxels / dpn_cell_count"),
-    "avg_lineage_volume": ("Average lineage volume per lineage", "voxels (dpn ∪ pros-only)"),
+    "lineage_volumes": (
+        "Lineage projected areas per lineage",
+        "um^2 (dpn ∪ pros-only)",
+    ),
+    "avg_nb_volume": (
+        "Average neuroblast projected area per lineage",
+        "um^2 / dpn_cell_count",
+    ),
+    "avg_lineage_volume": (
+        "Average lineage projected area per lineage",
+        "um^2 (dpn ∪ pros-only)",
+    ),
 }
 
 EXP_COMPARE_METRICS = ["cell_counts_total", "lineage_volumes", "avg_nb_volume"]
+AREA_LIKE_METRICS = {"lineage_volumes", "avg_nb_volume", "avg_lineage_volume"}
 
 # ----------------------------------------------
 # Helper functions for significance calculation
 # ----------------------------------------------
+
 
 def significance_star(p):
     if p < 0.001:
@@ -56,50 +69,24 @@ def rank_biserial_from_u(u_stat: float, n1: int, n2: int) -> float:
         return np.nan
     return (2.0 * float(u_stat) / float(n1 * n2)) - 1.0
 
-# -------------------------------
-# Metric computation
-# -------------------------------
-def compute_sizes_from_geo(geo: np.ndarray) -> Dict[str, np.ndarray]:
-    """
-    geo: (N,H,W,2)
-      channel0 = dpn mask
-      channel1 = union mask for pops {2,3} but may overlap dpn
-    """
-    assert geo.ndim == 4 and geo.shape[-1] == 2, f"Unexpected geo shape: {geo.shape}"
-    N = geo.shape[0]
 
-    dpn = geo[..., 0] > 0.5
-    union_raw = geo[..., 1] > 0.5
-    pros_only = union_raw & (~dpn)
-    lineage = dpn | pros_only
-
-    dpn_sizes = dpn.reshape(N, -1).sum(axis=1).astype(np.float64)
-    pros_only_sizes = pros_only.reshape(N, -1).sum(axis=1).astype(np.float64)
-    lineage_sizes = lineage.reshape(N, -1).sum(axis=1).astype(np.float64)
-
-    return {"dpn_sizes": dpn_sizes, "pros_only_sizes": pros_only_sizes, "lineage_sizes": lineage_sizes}
+def normalize_ds_value(ds_value) -> float | None:
+    if ds_value is None:
+        return None
+    arr = np.asarray(ds_value, dtype=float)
+    if arr.size == 0:
+        return None
+    return float(arr.reshape(-1)[0])
 
 
-def compute_metrics(geo: np.ndarray, counts: np.ndarray) -> Dict[str, np.ndarray]:
-    assert counts.ndim == 2 and counts.shape[1] == 2, f"Unexpected counts shape: {counts.shape}"
+def convert_metric_values(
+    values: np.ndarray, metric_key: str, ds_um: float
+) -> np.ndarray:
+    arr = np.asarray(values, dtype=float)
+    if metric_key in AREA_LIKE_METRICS:
+        return arr * (ds_um**2)
+    return arr
 
-    sizes = compute_sizes_from_geo(geo)
-    dpn_counts = counts[:, 0].astype(np.float64)
-    pros_counts = counts[:, 1].astype(np.float64)
-
-    total_counts = dpn_counts + pros_counts
-    lineage_volumes = sizes["lineage_sizes"]
-    avg_nb_volume = sizes["dpn_sizes"] / np.maximum(dpn_counts, 1.0)
-
-    # NOTE: this is the same as lineage_volumes; kept separate for clarity
-    avg_lineage_volume = lineage_volumes
-
-    return {
-        "cell_counts_total": total_counts,
-        "lineage_volumes": lineage_volumes,
-        "avg_nb_volume": avg_nb_volume,
-        "avg_lineage_volume": avg_lineage_volume,
-    }
 
 
 # -------------------------------
@@ -114,20 +101,28 @@ def load_sim_npz(path: Path):
     model_run = data["model_run"]
     condition = data.get("condition", None)
     if condition is None:
-        raise KeyError("NPZ is missing 'condition'. Re-save sim NPZ with condition included.")
-    return geo, counts, model_run, condition
+        raise KeyError(
+            "NPZ is missing 'condition'. Re-save sim NPZ with condition included."
+        )
+    ds_um = normalize_ds_value(data.get("ds", None))
+    return geo, counts, model_run, condition, ds_um
 
 
-def load_experimental_arrays(npz_dir: Path) -> Tuple[np.ndarray, np.ndarray]:
+def load_experimental_arrays(
+    npz_dir: Path,
+) -> Tuple[np.ndarray, np.ndarray, float | None]:
     if not npz_dir.exists():
         raise FileNotFoundError(f"Experimental NPZ directory not found: {npz_dir}")
 
     npz_files = sorted(npz_dir.glob("*.npz"))
     if not npz_files:
-        raise FileNotFoundError(f"No .npz files found in experimental directory: {npz_dir}")
+        raise FileNotFoundError(
+            f"No .npz files found in experimental directory: {npz_dir}"
+        )
 
     geo_list: List[np.ndarray] = []
     counts_list: List[np.ndarray] = []
+    ds_values: List[float] = []
 
     for fpath in npz_files:
         data = np.load(fpath, allow_pickle=True)
@@ -135,18 +130,31 @@ def load_experimental_arrays(npz_dir: Path) -> Tuple[np.ndarray, np.ndarray]:
             raise KeyError(f"{fpath} is missing required keys 'geo' and/or 'counts'.")
         geo_list.append(data["geo"])
         counts_list.append(data["counts"])
+        ds_value = normalize_ds_value(data.get("ds", None))
+        if ds_value is not None:
+            ds_values.append(ds_value)
 
     geo = np.concatenate(geo_list, axis=0)
     counts = np.concatenate(counts_list, axis=0)
-    return geo, counts
+    ds_um = None
+    if ds_values:
+        ds_arr = np.asarray(ds_values, dtype=float)
+        if not np.allclose(ds_arr, ds_arr[0]):
+            raise ValueError(f"Inconsistent ds values found in {npz_dir}: {ds_values}")
+        ds_um = float(ds_arr[0])
+    return geo, counts, ds_um
 
 
-def experimental_metrics_by_genotype() -> Dict[str, Dict[str, np.ndarray]]:
+def experimental_metrics_by_genotype() -> (
+    Tuple[Dict[str, Dict[str, np.ndarray]], Dict[str, float | None]]
+):
     out: Dict[str, Dict[str, np.ndarray]] = {}
+    ds_by_genotype: Dict[str, float | None] = {}
     for geno, exp_dir in EXP_NPZ_DIRS.items():
-        geo, counts = load_experimental_arrays(exp_dir)
+        geo, counts, ds_um = load_experimental_arrays(exp_dir)
         out[geno] = compute_metrics(geo, counts)
-    return out
+        ds_by_genotype[geno] = ds_um
+    return out, ds_by_genotype
 
 
 def normalize_model_run(model_run: np.ndarray) -> np.ndarray:
@@ -198,7 +206,10 @@ def values_by_genotype_and_condition(
 # -------------------------------
 # Plotting
 # -------------------------------
-def print_summary_table(vals: Dict[str, Dict[str, Dict[str, np.ndarray]]]):
+def print_summary_table(
+    vals: Dict[str, Dict[str, Dict[str, np.ndarray]]],
+    ds_um: float,
+):
     print("\n=== Summary (mean ± std; N) per genotype x condition ===")
     for geno in GENOTYPES:
         if not vals[geno]:
@@ -209,55 +220,90 @@ def print_summary_table(vals: Dict[str, Dict[str, Dict[str, np.ndarray]]]):
             if cond not in vals[geno]:
                 continue
             print(f"  condition {cond}:")
-            for key in ["cell_counts_total", "lineage_volumes", "avg_nb_volume", "avg_lineage_volume"]:
-                arr = np.asarray(vals[geno][cond][key], dtype=float)
+            for key in [
+                "cell_counts_total",
+                "lineage_volumes",
+                "avg_nb_volume",
+                "avg_lineage_volume",
+            ]:
+                arr = convert_metric_values(vals[geno][cond][key], key, ds_um)
                 if arr.size == 0:
                     continue
-                print(f"    {key:18s}  mean={arr.mean():.3f}  std={arr.std():.3f}  N={arr.size:d}")
+                print(
+                    f"    {key:18s}  mean={arr.mean():.3f}  std={arr.std():.3f}  N={arr.size:d}"
+                )
     print("========================================================\n")
 
 
-def print_experimental_summary_table(exp_metrics: Dict[str, Dict[str, np.ndarray]]):
+def print_experimental_summary_table(
+    exp_metrics: Dict[str, Dict[str, np.ndarray]],
+    ds_by_genotype: Dict[str, float | None],
+):
     print("\n=== Experimental Summary (aggregate over all lineages) ===")
     for geno in EXP_NPZ_DIRS:
         if geno not in exp_metrics:
             print(f"\n{geno.upper()}: (no data)")
             continue
 
-        nb_arr = np.asarray(exp_metrics[geno]["avg_nb_volume"], dtype=float)
+        ds_um = ds_by_genotype.get(geno) or DEFAULT_PROJECTED_DS_UM
+        nb_arr = convert_metric_values(
+            exp_metrics[geno]["avg_nb_volume"], "avg_nb_volume", ds_um
+        )
         count_arr = np.asarray(exp_metrics[geno]["cell_counts_total"], dtype=float)
-        lineage_arr = np.asarray(exp_metrics[geno]["avg_lineage_volume"], dtype=float)
+        lineage_arr = convert_metric_values(
+            exp_metrics[geno]["avg_lineage_volume"], "avg_lineage_volume", ds_um
+        )
 
         print(f"\n{geno.upper()} experimental group:")
         print(
-            "  average neuroblast volume "
-            f"(voxels / dpn cell): mean={nb_arr.mean():.3f} std={nb_arr.std():.3f} N={nb_arr.size:d}"
+            "  average neuroblast projected area "
+            f"(um^2 / dpn cell): mean={nb_arr.mean():.3f} std={nb_arr.std():.3f} N={nb_arr.size:d}"
         )
         print(
             "  average cell count "
             f"(cells / lineage): mean={count_arr.mean():.3f} std={count_arr.std():.3f} N={count_arr.size:d}"
         )
         print(
-            "  average lineage volume "
-            f"(voxels / lineage): mean={lineage_arr.mean():.3f} std={lineage_arr.std():.3f} N={lineage_arr.size:d}"
+            "  average lineage projected area "
+            f"(um^2 / lineage): mean={lineage_arr.mean():.3f} std={lineage_arr.std():.3f} N={lineage_arr.size:d}"
         )
     print("=======================================================\n")
 
 
-def print_simulation_summary_table(vals: Dict[str, Dict[str, Dict[str, np.ndarray]]]):
+def print_simulation_summary_table(
+    vals: Dict[str, Dict[str, Dict[str, np.ndarray]]],
+    ds_um: float,
+):
     print("\n=== Simulation Summary (aggregate over all lineages) ===")
     for geno in EXP_NPZ_DIRS:
         if geno not in vals or not vals[geno]:
             print(f"\n{geno.upper()}: (no data)")
             continue
 
-        nb_list = [np.asarray(vals[geno][cond]["avg_nb_volume"], dtype=float) for cond in vals[geno]]
-        count_list = [np.asarray(vals[geno][cond]["cell_counts_total"], dtype=float) for cond in vals[geno]]
-        lineage_list = [np.asarray(vals[geno][cond]["avg_lineage_volume"], dtype=float) for cond in vals[geno]]
+        nb_list = [
+            convert_metric_values(
+                vals[geno][cond]["avg_nb_volume"], "avg_nb_volume", ds_um
+            )
+            for cond in vals[geno]
+        ]
+        count_list = [
+            np.asarray(vals[geno][cond]["cell_counts_total"], dtype=float)
+            for cond in vals[geno]
+        ]
+        lineage_list = [
+            convert_metric_values(
+                vals[geno][cond]["avg_lineage_volume"], "avg_lineage_volume", ds_um
+            )
+            for cond in vals[geno]
+        ]
 
         nb_arr = np.concatenate(nb_list) if nb_list else np.array([], dtype=float)
-        count_arr = np.concatenate(count_list) if count_list else np.array([], dtype=float)
-        lineage_arr = np.concatenate(lineage_list) if lineage_list else np.array([], dtype=float)
+        count_arr = (
+            np.concatenate(count_list) if count_list else np.array([], dtype=float)
+        )
+        lineage_arr = (
+            np.concatenate(lineage_list) if lineage_list else np.array([], dtype=float)
+        )
 
         if nb_arr.size == 0 or count_arr.size == 0 or lineage_arr.size == 0:
             print(f"\n{geno.upper()}: (no data)")
@@ -265,16 +311,16 @@ def print_simulation_summary_table(vals: Dict[str, Dict[str, Dict[str, np.ndarra
 
         print(f"\n{geno.upper()} simulation group:")
         print(
-            "  average neuroblast volume "
-            f"(voxels / dpn cell): mean={nb_arr.mean():.3f} std={nb_arr.std():.3f} N={nb_arr.size:d}"
+            "  average neuroblast projected area "
+            f"(um^2 / dpn cell): mean={nb_arr.mean():.3f} std={nb_arr.std():.3f} N={nb_arr.size:d}"
         )
         print(
             "  average cell count "
             f"(cells / lineage): mean={count_arr.mean():.3f} std={count_arr.std():.3f} N={count_arr.size:d}"
         )
         print(
-            "  average lineage volume "
-            f"(voxels / lineage): mean={lineage_arr.mean():.3f} std={lineage_arr.std():.3f} N={lineage_arr.size:d}"
+            "  average lineage projected area "
+            f"(um^2 / lineage): mean={lineage_arr.mean():.3f} std={lineage_arr.std():.3f} N={lineage_arr.size:d}"
         )
     print("======================================================\n")
 
@@ -285,7 +331,8 @@ def boxplot_metric_for_genotype(
     metric_key,
     title,
     ylabel,
-    reference_condition="01",
+    ds_um,
+    reference_condition="sim01",
 ):
     dists = []
     labels = []
@@ -294,7 +341,7 @@ def boxplot_metric_for_genotype(
     for cond in SIM_CONDITIONS:
         if cond not in vals[geno]:
             continue
-        arr = np.asarray(vals[geno][cond][metric_key], dtype=float)
+        arr = convert_metric_values(vals[geno][cond][metric_key], metric_key, ds_um)
         if arr.size == 0:
             continue
         dists.append(arr)
@@ -324,9 +371,7 @@ def boxplot_metric_for_genotype(
                 raw_pvals.append(p)
                 effect_sizes.append(rank_biserial_from_u(u_stat, ref_n, arr.size))
 
-        corr_pvals = bonferroni_correct(
-            [p for p in raw_pvals if not np.isnan(p)]
-        )
+        corr_pvals = bonferroni_correct([p for p in raw_pvals if not np.isnan(p)])
 
         # reinsert NaNs
         corrected = []
@@ -351,11 +396,15 @@ def boxplot_metric_for_genotype(
         tick_labels=display_labels,
         showfliers=False,
         showmeans=True,
-        meanprops={"marker": "D", "markerfacecolor": "tab:blue", "markeredgecolor": "tab:blue", "markersize": 5},
+        meanprops={
+            "marker": "D",
+            "markerfacecolor": "tab:blue",
+            "markeredgecolor": "tab:blue",
+            "markersize": 5,
+        },
     )
     ax.set_title(
-        f"{geno.upper()} simulations — {title}\n"
-        f"Kruskal–Wallis p = {kw_p:.2e}"
+        f"{geno.upper()} simulations — {title}\n" f"Kruskal–Wallis p = {kw_p:.2e}"
     )
     ax.set_xlabel("Simulation condition (model_run)")
     ax.xaxis.set_label_coords(0.5, -0.18)
@@ -379,7 +428,11 @@ def boxplot_metric_for_genotype(
             color="black",
             transform=ax.get_xaxis_transform(),
             clip_on=False,
-            bbox={"facecolor": "white", "edgecolor": "0.8", "boxstyle": "round,pad=0.2"},
+            bbox={
+                "facecolor": "white",
+                "edgecolor": "0.8",
+                "boxstyle": "round,pad=0.2",
+            },
         )
 
     for i, p in enumerate(corrected):
@@ -425,6 +478,8 @@ def boxplot_metric_for_genotype(
 def boxplot_metric_vs_experimental(
     vals,
     exp_metrics,
+    sim_ds_um,
+    exp_ds_um,
     geno,
     metric_key,
     title,
@@ -437,14 +492,16 @@ def boxplot_metric_vs_experimental(
     for cond in SIM_CONDITIONS:
         if cond not in vals[geno]:
             continue
-        arr = np.asarray(vals[geno][cond][metric_key], dtype=float)
+        arr = convert_metric_values(vals[geno][cond][metric_key], metric_key, sim_ds_um)
         if arr.size == 0:
             continue
         dists.append(arr)
         labels.append(cond)
         sample_sizes.append(arr.size)
 
-    exp_arr = np.asarray(exp_metrics[geno][metric_key], dtype=float)
+    exp_arr = convert_metric_values(
+        exp_metrics[geno][metric_key], metric_key, exp_ds_um
+    )
 
     if not dists:
         print(f"[exp-compare] No simulation data for {geno} / {metric_key}")
@@ -487,7 +544,12 @@ def boxplot_metric_vs_experimental(
         tick_labels=display_labels,
         showfliers=False,
         showmeans=True,
-        meanprops={"marker": "D", "markerfacecolor": "tab:blue", "markeredgecolor": "tab:blue", "markersize": 5},
+        meanprops={
+            "marker": "D",
+            "markerfacecolor": "tab:blue",
+            "markeredgecolor": "tab:blue",
+            "markersize": 5,
+        },
     )
 
     ax.set_title(
@@ -531,7 +593,11 @@ def boxplot_metric_vs_experimental(
             color="black",
             transform=ax.get_xaxis_transform(),
             clip_on=False,
-            bbox={"facecolor": "white", "edgecolor": "0.8", "boxstyle": "round,pad=0.2"},
+            bbox={
+                "facecolor": "white",
+                "edgecolor": "0.8",
+                "boxstyle": "round,pad=0.2",
+            },
         )
 
     for i, p in enumerate(corrected):
@@ -579,17 +645,34 @@ def boxplot_metric_vs_experimental(
 # Main
 # -------------------------------
 if __name__ == "__main__":
-    geo, counts, model_run, condition = load_sim_npz(SIM_NPZ)
+    geo, counts, model_run, condition, sim_ds_um = load_sim_npz(SIM_NPZ)
     vals = values_by_genotype_and_condition(geo, counts, model_run, condition)
-    exp_metrics = experimental_metrics_by_genotype()
+    exp_metrics, exp_ds_by_genotype = experimental_metrics_by_genotype()
+    resolved_sim_ds_um = sim_ds_um
+    if resolved_sim_ds_um is None:
+        exp_ds_values = [ds for ds in exp_ds_by_genotype.values() if ds is not None]
+        resolved_sim_ds_um = (
+            exp_ds_values[0] if exp_ds_values else DEFAULT_PROJECTED_DS_UM
+        )
+        print(
+            "[info] Simulation NPZ is missing 'ds'; "
+            f"using ds={resolved_sim_ds_um:.3f} um for projected-area conversion."
+        )
 
-    print_experimental_summary_table(exp_metrics)
-    print_simulation_summary_table(vals)
-    print_summary_table(vals)
+    print_experimental_summary_table(exp_metrics, exp_ds_by_genotype)
+    print_simulation_summary_table(vals, resolved_sim_ds_um)
+    print_summary_table(vals, resolved_sim_ds_um)
 
     for geno in GENOTYPES:
         for metric_key, (title, ylabel) in METRICS.items():
-            boxplot_metric_for_genotype(vals, geno, metric_key, title, ylabel)
+            boxplot_metric_for_genotype(
+                vals,
+                geno,
+                metric_key,
+                title,
+                ylabel,
+                resolved_sim_ds_um,
+            )
 
     print("\n=== Comparing simulations to genotype-matched experimental data ===")
     for geno in GENOTYPES:
@@ -598,6 +681,8 @@ if __name__ == "__main__":
             boxplot_metric_vs_experimental(
                 vals=vals,
                 exp_metrics=exp_metrics,
+                sim_ds_um=resolved_sim_ds_um,
+                exp_ds_um=exp_ds_by_genotype.get(geno) or DEFAULT_PROJECTED_DS_UM,
                 geno=geno,
                 metric_key=metric_key,
                 title=title,

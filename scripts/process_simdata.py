@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 
 from src.simdata_geo_helpers import build_voxel_tensor_minimal, index_time_series_files
 
+
 def infer_condition_from_filename(path: Path) -> str:
     name = path.name.lower()
     if "mud" in name:
@@ -14,6 +15,7 @@ def infer_condition_from_filename(path: Path) -> str:
     if "wt" in name:
         return "wt"
     return "unknown"
+
 
 def precompute_sim_geo_counts_to_npz(
     base_path: Path,
@@ -203,8 +205,8 @@ def sanity_check_sim_npz(npz_path):
     print("\nLoading sim NPZ:", npz_path)
     data = np.load(npz_path, allow_pickle=True)
 
-    geo = data["geo"]              # (N, H, W, 2)
-    counts = data["counts"]        # (N, 2)
+    geo = data["geo"]  # (N, H, W, 2)
+    counts = data["counts"]  # (N, 2)
     model_run = data["model_run"]
     run_id = data["run_id"]
     time_id = data["time_id"]
@@ -241,7 +243,9 @@ def sanity_check_sim_npz(npz_path):
     # Show one WT-like example if available
     if len(wt_indices) > 0:
         idx_wt = int(np.random.choice(wt_indices))
-        title_prefix = f"WT mr={model_run[idx_wt]} run={run_id[idx_wt]} t={time_id[idx_wt]}"
+        title_prefix = (
+            f"WT mr={model_run[idx_wt]} run={run_id[idx_wt]} t={time_id[idx_wt]}"
+        )
         show_sim_sample(geo, counts, idx_wt, title_prefix=title_prefix)
     else:
         print("⚠️ No WT entries detected (condition=='wt').")
@@ -249,7 +253,9 @@ def sanity_check_sim_npz(npz_path):
     # Show one mudmut-like example if available
     if len(mud_indices) > 0:
         idx_mud = int(np.random.choice(mud_indices))
-        title_prefix = f"Mud mr={model_run[idx_mud]} run={run_id[idx_mud]} t={time_id[idx_mud]}"
+        title_prefix = (
+            f"Mud mr={model_run[idx_mud]} run={run_id[idx_mud]} t={time_id[idx_mud]}"
+        )
         show_sim_sample(geo, counts, idx_mud, title_prefix=title_prefix)
     else:
         print("⚠️ No mud entries detected (condition=='mud').")
@@ -273,8 +279,7 @@ def random_sample_idx(geo):
 if __name__ == "__main__":
     base = Path("data/sim")
     # MODEL_RUNS = [p.name for p in base.iterdir() if p.is_dir()]
-    MODEL_RUNS = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40"]
-    #MODEL_RUNS = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10"]
+    MODEL_RUNS = [f"sim{i:02d}" for i in range(1, 41)]
     print(f"Detected model runs: {MODEL_RUNS}")
-    out_npz = precompute_sim_geo_counts_to_npz(base, MODEL_RUNS, grid_size=(800, 800))
+    out_npz = precompute_sim_geo_counts_to_npz(base, MODEL_RUNS, grid_size=(200, 200))
     sanity_check_sim_npz(out_npz)

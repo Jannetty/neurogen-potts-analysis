@@ -9,18 +9,14 @@ from matplotlib.colors import ListedColormap
 import random
 
 from src.expdata_geo_helpers import (
-    load_vrml_meshes,
-    to_trimesh_list,
-    mesh_bbox,
-    assign_cells_to_lineages_strict,
     mesh_slice_polygon_2d,
     project_lineage_polygon_2d,
     choose_slice_plane_for_lineage,
-    lineage_is_connected,
     pad_grid_to_canvas,
     draw_poly_fill,
     draw_poly_outline,
 )
+from src.wrl_lineage_filtering import load_filtered_wrl_lobe
 
 # ---------- Max-projection pipeline ----------
 
@@ -29,9 +25,9 @@ def process_lobe_maxproj(
     lineage_file,
     pros_file,
     dpn_file,
-    ds=0.097,
+    ds=0.3,
     n_lineages=None,
-    canvas_size=800,
+    canvas_size=200,
     show=True,
     output_file=None,
     return_prevoxel_areas=False,
@@ -63,23 +59,13 @@ def process_lobe_maxproj(
     """
 
     # --- Load meshes ---
-    lineage_meshes = load_vrml_meshes(lineage_file)
-    pros_meshes = load_vrml_meshes(pros_file)
-    dpn_meshes = load_vrml_meshes(dpn_file)
-
-    lineage_tm = to_trimesh_list(lineage_meshes)
-    pros_tm = to_trimesh_list(pros_meshes)
-    dpn_tm = to_trimesh_list(dpn_meshes)
-
-    # --- Coarse bbox-based assignment (as in process_lobe_nearest) ---
-    lineage_bboxes = [mesh_bbox(m) for m in lineage_tm]
-
-    pros_to_lineage_idx, _ = assign_cells_to_lineages_strict(
-        pros_tm, lineage_bboxes, min_fraction=0.95
-    )
-    dpn_to_lineage_idx, _ = assign_cells_to_lineages_strict(
-        dpn_tm, lineage_bboxes, min_fraction=0.60
-    )
+    filtered_lobe = load_filtered_wrl_lobe(lineage_file, pros_file, dpn_file)
+    lineage_tm = filtered_lobe.lineage_meshes
+    pros_tm = filtered_lobe.pros_meshes
+    dpn_tm = filtered_lobe.dpn_meshes
+    pros_to_lineage_idx = filtered_lobe.pros_to_lineage_idx
+    dpn_to_lineage_idx = filtered_lobe.dpn_to_lineage_idx
+    kept_lineage_indices = {item.lineage_index for item in filtered_lobe.kept_lineages}
 
     print("Pros per lineage (bbox assignment):")
     for i in range(len(lineage_tm)):
@@ -98,7 +84,9 @@ def process_lobe_maxproj(
     geo_tensors = []  # list of (H, W, 2)
     counts_list = []  # list of [N_dpn, N_pros]
     lineage_ids = []  # which lineage index each sample came from
-    prevoxel_lineage_areas_um2 = []  # area of projected lineage hull before voxelization
+    prevoxel_lineage_areas_um2 = (
+        []
+    )  # area of projected lineage hull before voxelization
 
     # Genotype label inferred from output_file name
     genotype_label = None
@@ -117,23 +105,17 @@ def process_lobe_maxproj(
     for L in range(n_lineages):
         print(f"\n=== Lineage {L} ===")
 
-        if not lineage_is_connected(lineage_tm[L], min_faces=50):
-            print(f"=== Lineage {L} appears disconnected; skipping ===")
+        if L not in kept_lineage_indices:
+            print(f"=== Lineage {L} does not pass shared WRL lineage filters; skipping ===")
             continue
 
         lineage_mesh_L = lineage_tm[L]
 
-        # Pros assigned to this lineage
         pros_indices_L = np.where(pros_to_lineage_idx == L)[0]
         pros_meshes_L = [pros_tm[i] for i in pros_indices_L]
 
-        # Dpn assigned to this lineage
         dpn_indices_L = np.where(dpn_to_lineage_idx == L)[0]
         dpn_meshes_L = [dpn_tm[i] for i in dpn_indices_L]
-
-        if len(dpn_meshes_L) == 0:
-            print(f"[Lineage {L}] No Dpn assigned; skipping.")
-            continue
 
         # --- PCA on lineage geometry ---
         all_L_vertices = lineage_mesh_L.vertices
@@ -303,8 +285,21 @@ def process_lobe_maxproj(
         N_dpn = len(dpn_polys)
         N_pros = len(pros_polys)
 
+        # per-NB individual voxel counts (not union) for correct avg NB area
+        dpn_sum_voxels = 0
+        for dpn_poly in dpn_polys:
+            for iy in range(ny):
+                y0 = ymin + iy * ds
+                y1 = y0 + ds
+                for ix in range(nx):
+                    x0 = xmin + ix * ds
+                    x1 = x0 + ds
+                    voxel = box(x0, y0, x1, y1)
+                    if voxel.intersection(dpn_poly).area / voxel_area >= min_fraction:
+                        dpn_sum_voxels += 1
+
         geo_tensors.append(geo_tensor)
-        counts_list.append([N_dpn, N_pros])
+        counts_list.append([N_dpn, N_pros, dpn_sum_voxels])
         lineage_ids.append(L)
 
         if genotype_label is not None:
@@ -502,7 +497,7 @@ def show_sample(geo, counts, sample_idx, title_prefix=""):
     """
 
     img = geo[sample_idx]
-    N_dpn, N_pros = counts[sample_idx]
+    N_dpn, N_pros = counts[sample_idx, 0], counts[sample_idx, 1]
 
     # --- Print scalar counts and voxel occupancy ---
     nb_voxels = int(img[..., 0].sum())
@@ -647,8 +642,8 @@ def compare_npz_files(file1, file2, atol=0.0):
 
 def run_all_wt_lobes(
     lobes=(1, 2, 7, 8, 13, 15),
-    ds=0.097,
-    canvas_size=800,
+    ds=0.3,
+    canvas_size=200,
 ):
     """
     Run process_lobe_maxproj on all WT (Control) WRL triplets and save NPZ files
@@ -718,8 +713,8 @@ def run_all_wt_lobes(
 # ------ Functions for running all experimental data through pipeline ----
 def run_all_mud_lobes(
     lobes=(110, 113, 116, 119),
-    ds=0.097,
-    canvas_size=800,
+    ds=0.3,
+    canvas_size=200,
 ):
     """
     Run process_lobe_maxproj on all Mud WRL triplets and save NPZ files
@@ -786,8 +781,8 @@ def run_all_mud_lobes(
 
 def run_all_nanobody_lobes(
     lobes=(16, 17, 19, 20, 21, 22),
-    ds=0.097,
-    canvas_size=800,
+    ds=0.3,
+    canvas_size=200,
 ):
     """
     Run process_lobe_maxproj on all Nanobody WRL triplets and save NPZ files

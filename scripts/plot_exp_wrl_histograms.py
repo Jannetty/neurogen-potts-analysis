@@ -12,12 +12,7 @@ import matplotlib.pyplot as plt
 import trimesh
 from scipy.stats import ttest_ind
 
-from src.expdata_geo_helpers import (
-    load_vrml_meshes,
-    to_trimesh_list,
-    mesh_bbox,
-    assign_cells_to_lineages_strict,
-)
+from src.wrl_lineage_filtering import WrlLineageFilterConfig, load_filtered_wrl_lobe
 
 
 # ---------------------------- Data containers ----------------------------
@@ -103,6 +98,7 @@ def compute_lineage_volumes_and_dpn_counts(
     pros_file: Path,
     genotype: str,
     lobe_name: str,
+    min_lineage_faces: int = 50,
     dpn_min_fraction: float = 0.60,
     pros_min_fraction: float = 0.95,
 ) -> List[LineageRecord]:
@@ -110,35 +106,32 @@ def compute_lineage_volumes_and_dpn_counts(
     - Loads lineage meshes and Dpn meshes.
     - Computes per-lineage volume (µm^3) from lineage mesh.
     - Assigns Dpn cells to lineage indices using bbox overlap (strict).
+    - Skips disconnected lineages using the same min-face rule as
+      scripts/analyze_experimental_wrl_metrics.py.
     - Skips lineages with 0 neuroblasts (Dpn cells).
     - Returns one record per lineage.
     """
-    lineage_meshes = to_trimesh_list(load_vrml_meshes(lineage_file))
-    dpn_meshes = to_trimesh_list(load_vrml_meshes(dpn_file))
-    pros_meshes = to_trimesh_list(load_vrml_meshes(pros_file))
+    filtered_lobe = load_filtered_wrl_lobe(
+        lineage_file,
+        pros_file,
+        dpn_file,
+        config=WrlLineageFilterConfig(
+            min_lineage_faces=min_lineage_faces,
+            min_pros_fraction=pros_min_fraction,
+            min_dpn_fraction=dpn_min_fraction,
+        ),
+    )
+    dpn_meshes = filtered_lobe.dpn_meshes
 
-    if len(lineage_meshes) == 0:
+    if len(filtered_lobe.lineage_meshes) == 0:
         return []
 
-    lineage_bboxes = [mesh_bbox(m) for m in lineage_meshes]
-
-    dpn_to_lineage_idx, _ = assign_cells_to_lineages_strict(
-        dpn_meshes, lineage_bboxes, min_fraction=dpn_min_fraction
-    )
-
-    pros_to_lineage_idx, _ = assign_cells_to_lineages_strict(
-    pros_meshes, lineage_bboxes, min_fraction=pros_min_fraction
-    )
-
     records: List[LineageRecord] = []
-    for L, lin_mesh in enumerate(lineage_meshes):
-        ndpn = int(np.sum(dpn_to_lineage_idx == L))
-
-        # Skip lineages with no neuroblasts
-        if ndpn == 0:
-            continue
-
-        npros = int(np.sum(pros_to_lineage_idx == L))
+    for filtered_lineage in filtered_lobe.kept_lineages:
+        L = filtered_lineage.lineage_index
+        lin_mesh = filtered_lineage.lineage_mesh
+        ndpn = filtered_lineage.n_dpn
+        npros = filtered_lineage.n_pros
         n_total = ndpn + npros
 
         vol_um3 = mesh_volume_um3(lin_mesh)
@@ -291,6 +284,12 @@ def main() -> None:
         help="Base directory containing Control/ and Mud/ (default: data/exp/wrl_files)",
     )
     parser.add_argument(
+        "--min_lineage_faces",
+        type=int,
+        default=50,
+        help="Minimum face count for connected lineage components (default: 50)",
+    )
+    parser.add_argument(
         "--dpn_min_fraction",
         type=float,
         default=0.60,
@@ -312,6 +311,11 @@ def main() -> None:
         "--show",
         action="store_true",
         help="Show plots interactively (also saves).",
+    )
+    parser.add_argument(
+        "--single-dpn-only",
+        action="store_true",
+        help="Restrict both WT and mudmut lineages to those with exactly one Dpn+ cell.",
     )
     args = parser.parse_args()
 
@@ -346,6 +350,7 @@ def main() -> None:
             pros_file=pros_file,
             genotype="wt",
             lobe_name=lobe_name,
+            min_lineage_faces=args.min_lineage_faces,
             dpn_min_fraction=args.dpn_min_fraction,
             pros_min_fraction=0.95,
         )
@@ -360,6 +365,7 @@ def main() -> None:
             pros_file=pros_file,
             genotype="mudmut",
             lobe_name=lobe_name,
+            min_lineage_faces=args.min_lineage_faces,
             dpn_min_fraction=args.dpn_min_fraction,
             pros_min_fraction=0.95,
         )
@@ -368,11 +374,13 @@ def main() -> None:
     if not all_records:
         raise RuntimeError("No lineage records produced. Check that WRL files load correctly.")
 
-    # Filter: keep only WT lineages with exactly 1 neuroblast (ndpn_cells == 1)
-    before_wt = sum(r.genotype == "wt" for r in all_records)
-    all_records = [r for r in all_records if (r.genotype != "wt") or (r.ndpn_cells == 1)]
-    after_wt = sum(r.genotype == "wt" for r in all_records)
-    print(f"\nFiltered WT lineages with >1 Dpn: kept {after_wt}/{before_wt} WT lineages (ndpn_cells == 1)")
+    if args.single_dpn_only:
+        before_total = len(all_records)
+        all_records = [r for r in all_records if r.ndpn_cells == 1]
+        print(
+            "\nFiltered to single-Dpn lineages across both genotypes:"
+            f" kept {len(all_records)}/{before_total} lineages (ndpn_cells == 1)"
+        )
 
     # Split by genotype
     wt_vol = np.array([r.volume_um3 for r in all_records if r.genotype == "wt"], dtype=float)
@@ -387,10 +395,14 @@ def main() -> None:
     wt_npros = np.array([r.npros_cells for r in all_records if r.genotype == "wt"], dtype=float)
     mud_npros = np.array([r.npros_cells for r in all_records if r.genotype == "mudmut"], dtype=float)
 
-    print("\nSummary (after filtering WT ndpn>1):")
+    print("\nSummary:")
     print(f"  WT lineages:    {len(wt_vol)}")
     print(f"  mudmut lineages:{len(mud_vol)}")
+    print(f"  min_lineage_faces: {args.min_lineage_faces}")
     print(f"  dpn_min_fraction: {args.dpn_min_fraction}")
+    print(f"  single_dpn_only: {args.single_dpn_only}")
+
+    filename_suffix = "_singleDpnOnly" if args.single_dpn_only else ""
 
     # Plot 1: lineage volumes
     plot_histogram_compare(
@@ -398,7 +410,7 @@ def main() -> None:
         mud_vals=mud_vol,
         xlabel="Lineage volume (µm³)",
         title="Lineage volumes",
-        outpath=args.out_dir / "hist_lineage_volume_wt_vs_mud_wtDpnEq1.png",
+        outpath=args.out_dir / f"hist_lineage_volume_wt_vs_mud{filename_suffix}.png",
         bins=bins,
         show=args.show,
     )
@@ -409,7 +421,7 @@ def main() -> None:
         mud_vals=mud_ndpn,
         xlabel="Number of neuroblasts per lineage",
         title="Neuroblast counts per lineage",
-        outpath=args.out_dir / "hist_dpn_counts_wt_vs_mud_wtDpnEq1.png",
+        outpath=args.out_dir / f"hist_dpn_counts_wt_vs_mud{filename_suffix}.png",
         bins=bins,
         show=args.show,
     )
@@ -420,7 +432,7 @@ def main() -> None:
         mud_vals=mud_ncells,
         xlabel="Number of labeled cells per lineage (Dpn + Pros)",
         title="Distribution of labeled cell counts per lineage (WT vs mudmut)",
-        outpath=args.out_dir / "hist_total_labeled_cells_wt_vs_mud_wtDpnEq1.png",
+        outpath=args.out_dir / f"hist_total_labeled_cells_wt_vs_mud{filename_suffix}.png",
         bins=bins,
         show=args.show,
     )
@@ -431,7 +443,7 @@ def main() -> None:
         mud_vals=mud_npros,
         xlabel="Non-neuroblast cells per lineage (Pros)",
         title="Non-neuroblast (Pros+) counts per lineage",
-        outpath=args.out_dir / "hist_pros_counts_wt_vs_mud_wtDpnEq1.png",
+        outpath=args.out_dir / f"hist_pros_counts_wt_vs_mud{filename_suffix}.png",
         bins=bins,
         show=args.show,
     )
