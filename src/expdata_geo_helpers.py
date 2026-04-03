@@ -138,6 +138,68 @@ def assign_cells_to_lineages_strict(cell_tm_list, lineage_bboxes, min_fraction=0
     return np.array(assignments), np.array(scores)
 
 
+def assign_cells_to_lineages_by_containment(
+    cell_tm_list, lineage_meshes, min_fraction=0.60, n_sample=20
+):
+    """
+    Assign each cell to the lineage mesh that contains the most of its volume,
+    using ray-casting containment (trimesh.contains) on a small vertex sample.
+
+    A bbox pre-filter skips the ray-cast for lineages whose bbox doesn't
+    overlap the cell at all, keeping this fast in practice.
+
+    Parameters
+    ----------
+    n_sample : int
+        Number of vertices to sample per cell for the containment test.
+        20 is enough for a reliable fraction estimate while keeping cost low.
+    min_fraction : float
+        Minimum fraction of sampled vertices that must be inside the lineage
+        mesh for the cell to be assigned.
+    """
+    lineage_bboxes = [mesh_bbox(m) for m in lineage_meshes]
+    rng = np.random.default_rng(0)
+
+    assignments = []
+    scores = []
+
+    for cell in cell_tm_list:
+        v = cell.vertices
+        cell_min = v.min(axis=0)
+        cell_max = v.max(axis=0)
+
+        # Subsample vertices for the containment test
+        if len(v) > n_sample:
+            idx = rng.choice(len(v), size=n_sample, replace=False)
+            v_sample = v[idx]
+        else:
+            v_sample = v
+
+        best_idx = -1
+        best_score = -1.0
+
+        for i, lin_mesh in enumerate(lineage_meshes):
+            bb_min, bb_max = lineage_bboxes[i]
+
+            # Fast bbox pre-filter: skip if cell bbox doesn't overlap lineage bbox
+            if np.any(cell_min > bb_max) or np.any(cell_max < bb_min):
+                continue
+
+            frac = float(lin_mesh.contains(v_sample).mean())
+
+            if frac > best_score:
+                best_score = frac
+                best_idx = i
+
+        if best_score >= min_fraction:
+            assignments.append(best_idx)
+        else:
+            assignments.append(-1)
+        scores.append(best_score)
+
+    return np.array(assignments), np.array(scores)
+
+
 # ---------- Slicing + PCA helpers ----------
 
 
@@ -281,10 +343,18 @@ def choose_slice_plane_for_lineage(
     return plane_origin, e3, e1, e2
 
 
-def lineage_is_connected(tm, min_faces=50):
+def lineage_is_connected(tm, min_faces=50, max_secondary_volume=5.0):
+    """
+    Returns True if the mesh has no problematic disconnected components.
+
+    A secondary component is considered problematic if it has >= min_faces faces
+    AND volume >= max_secondary_volume. Small-volume secondary components
+    (surface reconstruction artifacts, seam fragments) are tolerated.
+    """
     comps = tm.split(only_watertight=False)
-    big = [c for c in comps if len(c.faces) >= min_faces]
-    return len(big) == 1
+    main = max(comps, key=lambda c: len(c.faces))
+    secondaries = [c for c in comps if c is not main and len(c.faces) >= min_faces]
+    return all(abs(float(c.volume)) < max_secondary_volume for c in secondaries)
 
 
 def pad_grid_to_canvas(type_grid, extent, ds, canvas_size=800):

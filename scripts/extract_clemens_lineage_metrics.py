@@ -70,14 +70,6 @@ def parse_args() -> argparse.Namespace:
         default=Path("data/exp/from_clemens"),
         help="Directory for generated Clemens summary and comparison CSVs.",
     )
-    parser.add_argument(
-        "--single-dpn-only",
-        action="store_true",
-        help=(
-            "Restrict WRL rows and Clemens volume-linked rows to lineages with "
-            "exactly one Dpn+ cell."
-        ),
-    )
     return parser.parse_args()
 
 
@@ -243,12 +235,9 @@ def load_wrl_per_lineage_rows(path: Path) -> list[dict[str, object]]:
 
 def filter_wrl_per_lineage_rows(
     rows: list[dict[str, object]],
-    *,
-    single_dpn_only: bool,
 ) -> list[dict[str, object]]:
-    if not single_dpn_only:
-        return rows
-    return [row for row in rows if int(row["n_dpn"]) == 1]
+    # WT lineages are restricted to single-Dpn; mutants may have more than one.
+    return [row for row in rows if row["condition"] != "WT" or int(row["n_dpn"]) == 1]
 
 
 def summarize_wrl_per_lineage_rows(
@@ -570,29 +559,27 @@ def main() -> None:
         cell_count_lookup,
     )
 
-    if args.single_dpn_only:
-        clemens_volume_records = [
-            record for record in clemens_volume_records if record.n_dpn == 1
-        ]
-        clemens_records_for_counts = [
-            ClemensCellCountRecord(
-                condition=record.condition,
-                lobe=record.lobe,
-                lineage=record.lineage,
-                total_cell_count=record.total_cell_count,
-            )
-            for record in clemens_volume_records
-            if not math.isnan(record.total_cell_count)
-        ]
-    else:
-        clemens_records_for_counts = clemens_records
+    # WT lineages are restricted to single-Dpn; mutants may have more than one.
+    clemens_volume_records = [
+        record for record in clemens_volume_records
+        if record.condition != "WT" or record.n_dpn == 1
+    ]
+    clemens_records_for_counts = [
+        ClemensCellCountRecord(
+            condition=record.condition,
+            lobe=record.lobe,
+            lineage=record.lineage,
+            total_cell_count=record.total_cell_count,
+        )
+        for record in clemens_volume_records
+        if not math.isnan(record.total_cell_count)
+    ]
 
     clemens_summaries = summarize_clemens_records(clemens_records_for_counts)
     clemens_volume_summaries = summarize_clemens_volume_records(clemens_volume_records)
 
     wrl_per_lineage_rows = filter_wrl_per_lineage_rows(
         load_wrl_per_lineage_rows(args.wrl_per_lineage_csv),
-        single_dpn_only=args.single_dpn_only,
     )
     wrl_rows = summarize_wrl_per_lineage_rows(wrl_per_lineage_rows)
     wrl_values_by_condition = load_wrl_cell_count_values_from_rows(wrl_per_lineage_rows)

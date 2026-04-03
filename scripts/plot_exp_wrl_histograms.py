@@ -10,7 +10,7 @@ from typing import List, Tuple
 import numpy as np
 import matplotlib.pyplot as plt
 import trimesh
-from scipy.stats import ttest_ind
+from scipy.stats import mannwhitneyu
 
 from src.wrl_lineage_filtering import WrlLineageFilterConfig, load_filtered_wrl_lobe
 
@@ -153,12 +153,12 @@ def compute_lineage_volumes_and_dpn_counts(
 
 # ---------------------------- Plotting ----------------------------
 
-def welch_pvalue(a: np.ndarray, b: np.ndarray) -> float:
+def mwu_pvalue(a: np.ndarray, b: np.ndarray) -> float:
     a = np.asarray(a, dtype=float)
     b = np.asarray(b, dtype=float)
     if a.size < 2 or b.size < 2:
         return np.nan
-    return float(ttest_ind(a, b, equal_var=False).pvalue)
+    return float(mannwhitneyu(a, b, alternative="two-sided").pvalue)
 
 
 def plot_histogram_compare(
@@ -252,10 +252,10 @@ def plot_histogram_compare(
             zorder=5,
         )
 
-    # Welch's t-test p-value
-    p = welch_pvalue(wt_vals, mud_vals)
+    # Mann-Whitney U p-value
+    p = mwu_pvalue(wt_vals, mud_vals)
     if np.isfinite(p):
-        ax.plot([], [], " ", label=f"Welch's t-test: p = {p:.2e}")
+        ax.plot([], [], " ", label=f"Mann-Whitney U: p = {p:.2e}")
 
     ax.legend(loc="best", fontsize=LEGEND_FS, frameon=False)
 
@@ -311,11 +311,6 @@ def main() -> None:
         "--show",
         action="store_true",
         help="Show plots interactively (also saves).",
-    )
-    parser.add_argument(
-        "--single-dpn-only",
-        action="store_true",
-        help="Restrict both WT and mudmut lineages to those with exactly one Dpn+ cell.",
     )
     args = parser.parse_args()
 
@@ -374,13 +369,13 @@ def main() -> None:
     if not all_records:
         raise RuntimeError("No lineage records produced. Check that WRL files load correctly.")
 
-    if args.single_dpn_only:
-        before_total = len(all_records)
-        all_records = [r for r in all_records if r.ndpn_cells == 1]
-        print(
-            "\nFiltered to single-Dpn lineages across both genotypes:"
-            f" kept {len(all_records)}/{before_total} lineages (ndpn_cells == 1)"
-        )
+    # WT neuroblasts should have exactly one Dpn+ cell; mutants may have more.
+    before_total = len(all_records)
+    all_records = [r for r in all_records if r.genotype != "wt" or r.ndpn_cells == 1]
+    print(
+        f"\nFiltered WT to single-Dpn lineages:"
+        f" kept {len(all_records)}/{before_total} total lineages"
+    )
 
     # Split by genotype
     wt_vol = np.array([r.volume_um3 for r in all_records if r.genotype == "wt"], dtype=float)
@@ -400,9 +395,6 @@ def main() -> None:
     print(f"  mudmut lineages:{len(mud_vol)}")
     print(f"  min_lineage_faces: {args.min_lineage_faces}")
     print(f"  dpn_min_fraction: {args.dpn_min_fraction}")
-    print(f"  single_dpn_only: {args.single_dpn_only}")
-
-    filename_suffix = "_singleDpnOnly" if args.single_dpn_only else ""
 
     # Plot 1: lineage volumes
     plot_histogram_compare(
@@ -410,7 +402,7 @@ def main() -> None:
         mud_vals=mud_vol,
         xlabel="Lineage volume (µm³)",
         title="Lineage volumes",
-        outpath=args.out_dir / f"hist_lineage_volume_wt_vs_mud{filename_suffix}.png",
+        outpath=args.out_dir / f"hist_lineage_volume_wt_vs_mud.png",
         bins=bins,
         show=args.show,
     )
@@ -421,7 +413,7 @@ def main() -> None:
         mud_vals=mud_ndpn,
         xlabel="Number of neuroblasts per lineage",
         title="Neuroblast counts per lineage",
-        outpath=args.out_dir / f"hist_dpn_counts_wt_vs_mud{filename_suffix}.png",
+        outpath=args.out_dir / f"hist_dpn_counts_wt_vs_mud.png",
         bins=bins,
         show=args.show,
     )
@@ -432,7 +424,7 @@ def main() -> None:
         mud_vals=mud_ncells,
         xlabel="Number of labeled cells per lineage (Dpn + Pros)",
         title="Distribution of labeled cell counts per lineage (WT vs mudmut)",
-        outpath=args.out_dir / f"hist_total_labeled_cells_wt_vs_mud{filename_suffix}.png",
+        outpath=args.out_dir / f"hist_total_labeled_cells_wt_vs_mud.png",
         bins=bins,
         show=args.show,
     )
@@ -443,7 +435,7 @@ def main() -> None:
         mud_vals=mud_npros,
         xlabel="Non-neuroblast cells per lineage (Pros)",
         title="Non-neuroblast (Pros+) counts per lineage",
-        outpath=args.out_dir / f"hist_pros_counts_wt_vs_mud{filename_suffix}.png",
+        outpath=args.out_dir / f"hist_pros_counts_wt_vs_mud.png",
         bins=bins,
         show=args.show,
     )

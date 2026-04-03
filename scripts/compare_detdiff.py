@@ -11,7 +11,7 @@ differentiation dynamics.
 
 Each pair (e.g. sim11 vs sim41) shares all parameters except HAS_DETERMINISTIC_DIFFERENTIATION.
 
-Metrics computed per replicate from endpoint (_000576) CELLS files:
+Metrics computed per replicate from endpoint (last timepoint) CELLS files:
   - NB count          (pop=1)
   - GMC count         (pop=2)
   - Neuron count      (pop=3)
@@ -82,7 +82,16 @@ METRIC_LABELS = {
 # ---------------------------------------------------------------------------
 def load_sim_metrics(sim_num):
     """Return a dict of metric -> np.array across all replicates for one sim."""
-    pattern = os.path.join(OUTPUT_BASE, f"sim{sim_num:02d}", "*_000576.CELLS.json")
+    sim_dir = os.path.join(OUTPUT_BASE, f"sim{sim_num:02d}")
+    all_cells_files = sorted(glob.glob(os.path.join(sim_dir, "*.CELLS.json")))
+    if not all_cells_files:
+        raise FileNotFoundError(f"No CELLS files found for sim{sim_num:02d} at {sim_dir}")
+    last_timepoint = max(
+        os.path.basename(f).rsplit("_", 1)[-1].replace(".CELLS.json", "")
+        for f in all_cells_files
+        if not f.endswith("_000000.CELLS.json")
+    )
+    pattern = os.path.join(sim_dir, f"*_{last_timepoint}.CELLS.json")
     files = sorted(glob.glob(pattern))
     if not files:
         raise FileNotFoundError(f"No endpoint CELLS files found for sim{sim_num:02d} at {pattern}")

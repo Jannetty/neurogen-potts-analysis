@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import csv
 import math
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable
 
@@ -23,14 +24,6 @@ class DatasetMetricConfig:
     key: str
     title: str
     xlabel: str
-
-
-@dataclass(frozen=True)
-class LegacyPlotConfig:
-    filename: str
-    title: str
-    xlabel: str
-    mean_digits: int
 
 
 METRICS = (
@@ -56,32 +49,6 @@ MUD_LABEL = "mudmut"
 WT_COLOR = "tab:blue"
 MUD_COLOR = "tab:orange"
 
-LEGACY_PLOTS = (
-    LegacyPlotConfig(
-        filename="hist_dpn_counts_wt_vs_mud.png",
-        title="Neuroblast counts per lineage",
-        xlabel="Number of neuroblasts per lineage",
-        mean_digits=0,
-    ),
-    LegacyPlotConfig(
-        filename="hist_pros_counts_wt_vs_mud.png",
-        title="Non-neuroblast (Pros+) counts per lineage",
-        xlabel="Non-neuroblast cells per lineage (Pros)",
-        mean_digits=0,
-    ),
-    LegacyPlotConfig(
-        filename="hist_total_labeled_cells_wt_vs_mud.png",
-        title="Distribution of labeled cell counts per lineage (WT vs mudmut)",
-        xlabel="Number of labeled cells per lineage (Dpn + Pros)",
-        mean_digits=0,
-    ),
-    LegacyPlotConfig(
-        filename="hist_lineage_volume_wt_vs_mud.png",
-        title="Lineage volumes",
-        xlabel="Lineage volume ($\\mu m^3$)",
-        mean_digits=1,
-    ),
-)
 
 
 def parse_args() -> argparse.Namespace:
@@ -116,26 +83,9 @@ def parse_args() -> argparse.Namespace:
         help="Histogram bins, either an integer or a NumPy binning rule.",
     )
     parser.add_argument(
-        "--single-dpn-only",
-        action="store_true",
-        help=(
-            "Optional extra subset after baseline WRL filtering: restrict both "
-            "datasets to lineages with exactly one Dpn+ cell."
-        ),
-    )
-    parser.add_argument(
         "--show",
         action="store_true",
         help="Show figures interactively after saving them.",
-    )
-    parser.add_argument(
-        "--legacy-exp-plot-dir",
-        type=Path,
-        default=None,
-        help=(
-            "If set, also write the four legacy Clemens-only histograms with the "
-            "same filenames used in data/exp/plots."
-        ),
     )
     return parser.parse_args()
 
@@ -194,15 +144,14 @@ def load_clemens_rows(clemens_dir: Path) -> list[dict[str, object]]:
 
 def filter_rows(
     rows: Iterable[dict[str, object]],
-    *,
-    single_dpn_only: bool,
 ) -> list[dict[str, object]]:
+    # Keep WT and mudmut only; WT is restricted to single-Dpn lineages.
     filtered: list[dict[str, object]] = []
     for row in rows:
         condition = str(row["condition"])
         if condition not in {WT_LABEL, MUD_LABEL}:
             continue
-        if single_dpn_only and int(row["n_dpn"]) != 1:
+        if condition == WT_LABEL and int(row["n_dpn"]) != 1:
             continue
         filtered.append(row)
     return filtered
@@ -404,103 +353,6 @@ def plot_metric_comparison(
     plt.close(fig)
 
 
-def legacy_metric_values(
-    rows: Iterable[dict[str, object]], filename: str, condition: str
-) -> np.ndarray:
-    values: list[float] = []
-    for row in rows:
-        if str(row["condition"]) != condition:
-            continue
-        total_cell_count = maybe_float(row["total_cell_count"])
-        lineage_volume_um3 = maybe_float(row["lineage_volume_um3"])
-        n_dpn = int(row["n_dpn"])
-
-        if filename == "hist_dpn_counts_wt_vs_mud.png":
-            values.append(float(n_dpn))
-        elif filename == "hist_pros_counts_wt_vs_mud.png":
-            values.append(total_cell_count - n_dpn)
-        elif filename == "hist_total_labeled_cells_wt_vs_mud.png":
-            values.append(total_cell_count)
-        elif filename == "hist_lineage_volume_wt_vs_mud.png":
-            # Match the legacy plot scale, which displays these values in units of 1e3 um^3.
-            values.append(lineage_volume_um3 / 1000.0)
-        else:
-            raise ValueError(f"Unsupported legacy plot filename: {filename}")
-
-    return np.asarray([value for value in values if np.isfinite(value)], dtype=float)
-
-
-def plot_legacy_exp_histogram(
-    config: LegacyPlotConfig,
-    clemens_rows: list[dict[str, object]],
-    outpath: Path,
-    show: bool,
-) -> None:
-    outpath.parent.mkdir(parents=True, exist_ok=True)
-    wt_vals = legacy_metric_values(clemens_rows, config.filename, WT_LABEL)
-    mud_vals = legacy_metric_values(clemens_rows, config.filename, MUD_LABEL)
-
-    fig, ax = plt.subplots(figsize=(14.5, 8.6))
-    all_vals = np.concatenate([arr for arr in (wt_vals, mud_vals) if arr.size])
-    if config.filename == "hist_dpn_counts_wt_vs_mud.png":
-        min_edge = int(np.floor(all_vals.min() - 0.5))
-        max_edge = int(np.ceil(all_vals.max() + 0.5))
-        bin_edges = np.arange(min_edge, max_edge + 1, 1)
-    else:
-        bin_edges = np.histogram_bin_edges(all_vals, bins=10)
-
-    wt_mean = float(np.mean(wt_vals)) if wt_vals.size else float("nan")
-    mud_mean = float(np.mean(mud_vals)) if mud_vals.size else float("nan")
-    welch_p = welch_pvalue(wt_vals, mud_vals)
-
-    ax.hist(
-        wt_vals,
-        bins=bin_edges,
-        alpha=0.4,
-        color=WT_COLOR,
-        edgecolor="black",
-        linewidth=1.0,
-        label=f"WT (N = {wt_vals.size})",
-    )
-    ax.hist(
-        mud_vals,
-        bins=bin_edges,
-        alpha=0.4,
-        color=MUD_COLOR,
-        edgecolor="black",
-        linewidth=1.0,
-        label=f"Mudmut (N = {mud_vals.size})",
-    )
-    ax.axvline(
-        wt_mean,
-        color=WT_COLOR,
-        linewidth=2.5,
-        label=f"WT mean = {format_mean_label(wt_mean, config.mean_digits)}",
-    )
-    ax.axvline(
-        mud_mean,
-        color=MUD_COLOR,
-        linewidth=2.5,
-        label=f"mudmut mean = {format_mean_label(mud_mean, config.mean_digits)}",
-    )
-    ax.plot([], [], " ", label=f"Welch's t-test: p = {welch_p:.2e}")
-
-    ax.set_title(config.title, pad=28)
-    ax.set_xlabel(config.xlabel)
-    ax.set_ylabel("Count")
-    ax.legend(
-        frameon=False,
-        loc="upper right",
-        bbox_to_anchor=(0.99, 0.992),
-        borderaxespad=0.0,
-    )
-    fig.tight_layout(rect=(0.01, 0.01, 0.99, 0.96))
-    fig.savefig(outpath, dpi=250, bbox_inches="tight", pad_inches=0.05)
-    if show:
-        plt.show()
-    plt.close(fig)
-
-
 def write_stats_csv(path: Path, rows: list[dict[str, object]]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     fieldnames = [
@@ -546,13 +398,8 @@ def main() -> None:
         bins = args.bins
 
     dataset_rows = {
-        "WRL": filter_rows(
-            load_wrl_rows(args.wrl_per_lineage_csv),
-            single_dpn_only=args.single_dpn_only,
-        ),
-        "Clemens": filter_rows(
-            load_clemens_rows(args.clemens_dir), single_dpn_only=args.single_dpn_only
-        ),
+        "WRL": filter_rows(load_wrl_rows(args.wrl_per_lineage_csv)),
+        "Clemens": filter_rows(load_clemens_rows(args.clemens_dir)),
     }
 
     print("Lineage counts used for plotting:")
@@ -580,16 +427,6 @@ def main() -> None:
             show=args.show,
         )
 
-    if args.legacy_exp_plot_dir is not None:
-        clemens_rows = dataset_rows["Clemens"]
-        for config in LEGACY_PLOTS:
-            plot_legacy_exp_histogram(
-                config=config,
-                clemens_rows=clemens_rows,
-                outpath=args.legacy_exp_plot_dir / config.filename,
-                show=args.show,
-            )
-
     print("WT vs mudmut comparison:")
     for row in stats_rows:
         print(
@@ -607,9 +444,6 @@ def main() -> None:
     print(f"  {stats_csv}")
     for metric in METRICS:
         print(f"  {args.outdir / f'{metric.key}_wt_vs_mud_wrl_vs_clemens.png'}")
-    if args.legacy_exp_plot_dir is not None:
-        for config in LEGACY_PLOTS:
-            print(f"  {args.legacy_exp_plot_dir / config.filename}")
 
 
 if __name__ == "__main__":

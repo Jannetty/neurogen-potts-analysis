@@ -140,7 +140,7 @@ def infer_condition_key(path: Path) -> str:
 def load_clemens_records(clemens_dir: Path) -> list[ClemensCellCountRecord]:
     records: list[ClemensCellCountRecord] = []
 
-    for workbook_path in sorted(clemens_dir.glob("Pros cell counts*.xlsx")):
+    for workbook_path in sorted(clemens_dir.glob("Pros_cell_counts*.xlsx")):
         condition_key = infer_condition_key(workbook_path)
         condition_label = CONDITION_LABELS[condition_key]
         rows = load_worksheet(workbook_path)
@@ -253,7 +253,7 @@ def load_clemens_volume_records(
     clemens_dir: Path,
     cell_count_lookup: dict[tuple[str, str, str], float],
 ) -> list[ClemensVolumeRecord]:
-    workbook_path = clemens_dir / "Figure4_raw data_classified lineages.xlsx"
+    workbook_path = clemens_dir / "Figure4_raw_data_classified_lineages.xlsx"
     shared_strings = load_workbook_shared_strings(workbook_path)
     sheet_targets = load_workbook_sheet_targets(workbook_path)
 
